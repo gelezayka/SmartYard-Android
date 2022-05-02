@@ -18,7 +18,7 @@ class SnapOnScrollListener(
     var behavior: ScrollBehavior = ScrollBehavior.NOTIFY_ON_SCROLL_IDLE,
     var onSnapPositionChangeListener: OnSnapPositionChangeListener? = null
 ) : RecyclerView.OnScrollListener() {
-    
+
     enum class ScrollBehavior {
         NOTIFY_ON_SCROLL,
         NOTIFY_ON_SCROLL_IDLE
@@ -33,8 +33,7 @@ class SnapOnScrollListener(
     }
 
     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-        if (behavior == ScrollBehavior.NOTIFY_ON_SCROLL_IDLE
-            && newState == RecyclerView.SCROLL_STATE_IDLE) {
+        if (behavior == ScrollBehavior.NOTIFY_ON_SCROLL_IDLE && newState == RecyclerView.SCROLL_STATE_IDLE) {
             maybeNotifySnapPositionChanged(recyclerView)
         }
     }

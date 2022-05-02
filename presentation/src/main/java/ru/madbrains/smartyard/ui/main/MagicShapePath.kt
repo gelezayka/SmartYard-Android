@@ -13,8 +13,12 @@ import ru.madbrains.smartyard.ui.main.MagicShapePath.ShiftMode.RIGHT
 import ru.madbrains.smartyard.ui.main.MagicShapePath.ShiftMode.TOP
 import java.util.ArrayList
 
-class MagicShapePath private constructor(private val startX: Float, private val startY: Float,
-    private val endX: Float, private val endY: Float) {
+class MagicShapePath private constructor(
+    private val startX: Float,
+    private val startY: Float,
+    private val endX: Float,
+    private val endY: Float
+) {
 
     private val circles: ArrayList<CircleShape> = ArrayList()
 
@@ -44,14 +48,18 @@ class MagicShapePath private constructor(private val startX: Float, private val 
                 // All tangents between current circle and next circle
                 val tangent: DoubleArray = getTangentForTwoCircles(circle, nextCircle)
 
-                startAngle = GeometryUtils.angleBetweenPoints(circle.centerX.toDouble(),
+                startAngle = GeometryUtils.angleBetweenPoints(
+                    circle.centerX.toDouble(),
                     circle.centerY.toDouble(),
                     tPx,
-                    tPy)
-                endAngle = GeometryUtils.angleBetweenPoints(circle.centerX.toDouble(),
+                    tPy
+                )
+                endAngle = GeometryUtils.angleBetweenPoints(
+                    circle.centerX.toDouble(),
                     circle.centerY.toDouble(),
                     tangent[0],
-                    tangent[1])
+                    tangent[1]
+                )
 
                 px = tangent[0].toFloat()
                 py = tangent[1].toFloat()
@@ -59,14 +67,18 @@ class MagicShapePath private constructor(private val startX: Float, private val 
                 // Draw last arc
                 val tangentOfLastPointToCircle = getTangentForPointToCircle(circle)
 
-                startAngle = GeometryUtils.angleBetweenPoints(circle.centerX.toDouble(),
+                startAngle = GeometryUtils.angleBetweenPoints(
+                    circle.centerX.toDouble(),
                     circle.centerY.toDouble(),
                     tPx,
-                    tPy)
-                endAngle = GeometryUtils.angleBetweenPoints(circle.centerX.toDouble(),
+                    tPy
+                )
+                endAngle = GeometryUtils.angleBetweenPoints(
+                    circle.centerX.toDouble(),
                     circle.centerY.toDouble(),
                     tangentOfLastPointToCircle[2],
-                    tangentOfLastPointToCircle[3])
+                    tangentOfLastPointToCircle[3]
+                )
             }
 
             var sweepAngle = endAngle - startAngle
@@ -76,12 +88,14 @@ class MagicShapePath private constructor(private val startX: Float, private val 
                 sweepAngle -= 360
             }
 
-            shapePath.addArc(circle.left,
+            shapePath.addArc(
+                circle.left,
                 circle.top,
                 circle.right,
                 circle.bottom,
                 startAngle.toFloat(),
-                sweepAngle.toFloat())
+                sweepAngle.toFloat()
+            )
         }
 
         shapePath.lineTo(endX, 0f /*endY*/)
@@ -94,7 +108,8 @@ class MagicShapePath private constructor(private val startX: Float, private val 
             circle.radius.toDouble(),
             nextCircle.centerX.toDouble(),
             nextCircle.centerY.toDouble(),
-            nextCircle.radius.toDouble())
+            nextCircle.radius.toDouble()
+        )
 
         return if (circle.pathDirection == nextCircle.pathDirection) {
             if (circle.pathDirection == C_CLOCKWISE) tangents[0] else tangents[1]
@@ -133,14 +148,18 @@ class MagicShapePath private constructor(private val startX: Float, private val 
                 // All tangents between current circle and next circle
                 val tangent: DoubleArray = getTangentForTwoCircles(circle, nextCircle)
 
-                startAngle = GeometryUtils.angleBetweenPoints(circle.centerX.toDouble(),
+                startAngle = GeometryUtils.angleBetweenPoints(
+                    circle.centerX.toDouble(),
                     circle.centerY.toDouble(),
                     tPx,
-                    tPy)
-                endAngle = GeometryUtils.angleBetweenPoints(circle.centerX.toDouble(),
+                    tPy
+                )
+                endAngle = GeometryUtils.angleBetweenPoints(
+                    circle.centerX.toDouble(),
                     circle.centerY.toDouble(),
                     tangent[0],
-                    tangent[1])
+                    tangent[1]
+                )
 
                 paint.alpha = 255
                 paint.style = FILL
@@ -153,19 +172,25 @@ class MagicShapePath private constructor(private val startX: Float, private val 
                 val tangentOfLastPointToCircle = getTangentForPointToCircle(circle)
                 paint.alpha = 255
                 paint.style = FILL
-                canvas.drawCircle(tangentOfLastPointToCircle[2].toFloat(),
+                canvas.drawCircle(
+                    tangentOfLastPointToCircle[2].toFloat(),
                     tangentOfLastPointToCircle[3].toFloat(),
                     2f,
-                    paint)
+                    paint
+                )
 
-                startAngle = GeometryUtils.angleBetweenPoints(circle.centerX.toDouble(),
+                startAngle = GeometryUtils.angleBetweenPoints(
+                    circle.centerX.toDouble(),
                     circle.centerY.toDouble(),
                     tPx,
-                    tPy)
-                endAngle = GeometryUtils.angleBetweenPoints(circle.centerX.toDouble(),
+                    tPy
+                )
+                endAngle = GeometryUtils.angleBetweenPoints(
+                    circle.centerX.toDouble(),
                     circle.centerY.toDouble(),
                     tangentOfLastPointToCircle[2],
-                    tangentOfLastPointToCircle[3])
+                    tangentOfLastPointToCircle[3]
+                )
             }
 
             var sweepAngle = endAngle - startAngle
@@ -177,14 +202,18 @@ class MagicShapePath private constructor(private val startX: Float, private val 
 
             paint.alpha = 50
             paint.style = STROKE
-            canvas.drawArc(RectF(circle.left,
-                circle.top,
-                circle.right,
-                circle.bottom),
+            canvas.drawArc(
+                RectF(
+                    circle.left,
+                    circle.top,
+                    circle.right,
+                    circle.bottom
+                ),
                 startAngle.toFloat(),
                 sweepAngle.toFloat(),
                 true,
-                paint)
+                paint
+            )
         }
     }
 
@@ -194,18 +223,23 @@ class MagicShapePath private constructor(private val startX: Float, private val 
             endY.toDouble(),
             circle.centerX.toDouble(),
             circle.centerY.toDouble(),
-            circle.radius.toDouble())
+            circle.radius.toDouble()
+        )
         return tangentsOfLastPointToCircle[if (circle.pathDirection == C_CLOCKWISE) 0 else 1]
     }
 
-    private fun getLineToCircle(px: Float, py: Float,
-        circle: CircleShape): Pair<Double, Double> {
+    private fun getLineToCircle(
+        px: Float,
+        py: Float,
+        circle: CircleShape
+    ): Pair<Double, Double> {
         val tangentsOfPointToCircle = GeometryUtils.getTangentsOfPointToCircle(
             px.toDouble(),
             py.toDouble(),
             circle.centerX.toDouble(),
             circle.centerY.toDouble(),
-            circle.radius.toDouble())
+            circle.radius.toDouble()
+        )
         val tangentOfPointToCircle =
             tangentsOfPointToCircle[if (circle.pathDirection == CLOCKWISE) 0 else 1]
 
@@ -214,10 +248,12 @@ class MagicShapePath private constructor(private val startX: Float, private val 
         return Pair(tPx, tPy)
     }
 
-    open class CircleShape(var centerX: Float,
+    open class CircleShape(
+        var centerX: Float,
         val centerY: Float,
         val radius: Float,
-        val pathDirection: PathDirection) {
+        val pathDirection: PathDirection
+    ) {
         fun shiftOutside(circle: CircleShape, shift: ShiftMode) {
             if (shift == LEFT || shift == RIGHT) {
                 val difY = circle.centerY - centerY

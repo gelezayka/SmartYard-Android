@@ -34,7 +34,7 @@ class SettingsViewModel(
 
     val phone = MutableLiveData<String>()
 
-    //учитывать ли кэш при следующем запросе списка адресов для настройки
+    // учитывать ли кэш при следующем запросе списка адресов для настройки
     var nextListNoCache = true
 
     enum class TypeDialog(

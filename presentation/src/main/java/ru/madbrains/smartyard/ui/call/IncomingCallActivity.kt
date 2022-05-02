@@ -88,7 +88,7 @@ class IncomingCallActivity : CommonActivity(), KoinComponent, SensorEventListene
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             useSpeaker = true
         } else {
-            //включение громкой связи, если выставлен флаг в настройках домофона
+            // включение громкой связи, если выставлен флаг в настройках домофона
             if (fcmData != null) {
                 if (mViewModel.preferenceStorage.addressOptions.getOption(fcmData.flatId).isSpeaker == true) {
                     useSpeaker = true

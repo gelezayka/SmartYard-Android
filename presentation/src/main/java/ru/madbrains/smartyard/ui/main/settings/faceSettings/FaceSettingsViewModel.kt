@@ -2,8 +2,6 @@ package ru.madbrains.smartyard.ui.main.settings.faceSettings
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import ru.madbrains.data.prefs.PreferenceStorage
 import ru.madbrains.domain.interactors.FRSInteractor
 import ru.madbrains.domain.model.response.FaceData

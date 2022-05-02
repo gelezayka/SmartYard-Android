@@ -20,8 +20,11 @@ class CallToSupportFragment : BottomSheetDialogFragment() {
         setStyle(STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentCallToSupportBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -51,7 +54,7 @@ class CallToSupportFragment : BottomSheetDialogFragment() {
                         resources.getString(R.string.burger_call_support_by_phone, dialNumber)
                     binding.pbCallToSupport.visibility = View.GONE
 
-                    //когда получили номер, тогда и создаем обработчик
+                    // когда получили номер, тогда и создаем обработчик
                     binding.llCallToSupport.setOnClickListener {
                         viewModel.chosenSupportOption.postValue(BurgerViewModel.SupportOption.CALL_TO_SUPPORT_BY_PHONE)
                         dismiss()

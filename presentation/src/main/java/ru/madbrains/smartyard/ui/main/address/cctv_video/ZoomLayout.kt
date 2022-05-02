@@ -3,7 +3,11 @@ package ru.madbrains.smartyard.ui.main.address.cctv_video
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
-import android.view.*
+import android.view.GestureDetector
+import android.view.Gravity
+import android.view.ScaleGestureDetector
+import android.view.View
+import android.view.MotionEvent
 import android.view.ScaleGestureDetector.OnScaleGestureListener
 import android.widget.FrameLayout
 
@@ -63,9 +67,11 @@ class ZoomLayout : FrameLayout, OnScaleGestureListener {
         init(context)
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context,
+    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
+        context,
         attrs,
-        defStyle) {
+        defStyle
+    ) {
         init(context)
     }
 
@@ -80,17 +86,22 @@ class ZoomLayout : FrameLayout, OnScaleGestureListener {
     @SuppressLint("ClickableViewAccessibility")
     private fun init(context: Context) {
         val scaleDetector = ScaleGestureDetector(context, this)
-        val q = GestureDetector(context, MyGestureDetector(
-            {
-                singleTapListener?.invoke()
-            }, {
-                doubleTapListener?.invoke(it)
-            }))
+        val q = GestureDetector(
+            context,
+            MyGestureDetector(
+                {
+                    singleTapListener?.invoke()
+                },
+                {
+                    doubleTapListener?.invoke(it)
+                }
+            )
+        )
         setOnTouchListener { _, motionEvent ->
             q.onTouchEvent(motionEvent)
             when (motionEvent.action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_DOWN -> {
-                    //Log.i(TAG, "DOWN")
+                    // Log.i(TAG, "DOWN")
                     if (scale > MIN_ZOOM) {
                         mode = Mode.DRAG
                         startX = motionEvent.x - prevDx
@@ -104,7 +115,7 @@ class ZoomLayout : FrameLayout, OnScaleGestureListener {
                 MotionEvent.ACTION_POINTER_DOWN -> mode = Mode.ZOOM
                 MotionEvent.ACTION_POINTER_UP -> mode = Mode.NONE
                 MotionEvent.ACTION_UP -> {
-                    //Log.i(TAG, "UP")
+                    // Log.i(TAG, "UP")
                     mode = Mode.NONE
                     prevDx = dx
                     prevDy = dy
@@ -117,8 +128,8 @@ class ZoomLayout : FrameLayout, OnScaleGestureListener {
                 var childWidth = child().width
                 var childHeight = child().height
 
-                //расчет размеров
-                aspectRatio?.let {ratio ->
+                // расчет размеров
+                aspectRatio?.let { ratio ->
                     if (width > 0 && height > 0) {
                         val lp = child().layoutParams as LayoutParams
                         val layoutRatio = width.toFloat() / height.toFloat()
@@ -143,15 +154,15 @@ class ZoomLayout : FrameLayout, OnScaleGestureListener {
                 dx = Math.min(Math.max(dx, -maxDx), 0f)
                 dy = Math.min(Math.max(dy, -maxDy), 0f)
 
-                //центрируем дочерний элемент, если его размеры меньше родительского
+                // центрируем дочерний элемент, если его размеры меньше родительского
                 if (childWidth * scale < width) {
                     dx = (width - childWidth * scale) / 2
                 }
                 if (childHeight * scale < height) {
                     dy = (height - childHeight * scale) / 2
                 }
-                
-                //Log.i(TAG,"Width: " + child().width + ", scale " + scale + ", dx " + dx + ", max " + maxDx)
+
+                // Log.i(TAG,"Width: " + child().width + ", scale " + scale + ", dx " + dx + ", max " + maxDx)
                 applyScaleAndTranslation()
             }
             true
@@ -160,27 +171,27 @@ class ZoomLayout : FrameLayout, OnScaleGestureListener {
 
     // ScaleGestureDetector
     override fun onScaleBegin(scaleDetector: ScaleGestureDetector): Boolean {
-        //Log.i(TAG, "onScaleBegin")
+        // Log.i(TAG, "onScaleBegin")
         return true
     }
 
     override fun onScale(scaleDetector: ScaleGestureDetector): Boolean {
         val scaleFactor = scaleDetector.scaleFactor
-        //Log.i(TAG, "onScale(), scaleFactor = $scaleFactor")
+        // Log.i(TAG, "onScale(), scaleFactor = $scaleFactor")
         if (lastScaleFactor == 0f || Math.signum(scaleFactor) == Math.signum(lastScaleFactor)) {
             val prevScale = scale
             scale *= scaleFactor
             scale = Math.max(MIN_ZOOM, Math.min(scale, MAX_ZOOM))
             lastScaleFactor = scaleFactor
             val adjustedScaleFactor = scale / prevScale
-            //Log.d(TAG, "onScale, adjustedScaleFactor = $adjustedScaleFactor")
-            //Log.d(TAG, "onScale, BEFORE dx/dy = $dx/$dy")
+            // Log.d(TAG, "onScale, adjustedScaleFactor = $adjustedScaleFactor")
+            // Log.d(TAG, "onScale, BEFORE dx/dy = $dx/$dy")
             val focusX = scaleDetector.focusX
             val focusY = scaleDetector.focusY
-            //Log.d(TAG, "onScale, focusX/focusy = $focusX/$focusY")
+            // Log.d(TAG, "onScale, focusX/focusy = $focusX/$focusY")
             dx += (dx - focusX) * (adjustedScaleFactor - 1)
             dy += (dy - focusY) * (adjustedScaleFactor - 1)
-            //Log.d(TAG, "onScale, dx/dy = $dx/$dy")
+            // Log.d(TAG, "onScale, dx/dy = $dx/$dy")
         } else {
             lastScaleFactor = 0f
         }
@@ -188,7 +199,7 @@ class ZoomLayout : FrameLayout, OnScaleGestureListener {
     }
 
     override fun onScaleEnd(scaleDetector: ScaleGestureDetector) {
-        //Log.i(TAG, "onScaleEnd")
+        // Log.i(TAG, "onScaleEnd")
     }
 
     private fun applyScaleAndTranslation() {

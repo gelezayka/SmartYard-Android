@@ -27,21 +27,25 @@ class FaceImageView : AppCompatImageView {
         init(context)
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context,
+    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
+        context,
         attrs,
-        defStyle) {
+        defStyle
+    ) {
         init(context)
     }
 
     private fun init(context: Context) {
         registeredPaint = Paint().apply {
             color = context.resources.getColorCompat(R.color.green_100)
-            strokeWidth = resources.getDimensionPixelSize(R.dimen.event_log_detail_stroke_size).toFloat()
+            strokeWidth =
+                resources.getDimensionPixelSize(R.dimen.event_log_detail_stroke_size).toFloat()
             style = Paint.Style.STROKE
         }
         unregisteredPaint = Paint().apply {
             color = context.resources.getColorCompat(R.color.red_100)
-            strokeWidth = resources.getDimensionPixelSize(R.dimen.event_log_detail_stroke_size).toFloat()
+            strokeWidth =
+                resources.getDimensionPixelSize(R.dimen.event_log_detail_stroke_size).toFloat()
             style = Paint.Style.STROKE
         }
     }
@@ -59,7 +63,7 @@ class FaceImageView : AppCompatImageView {
             val scaleX = measuredWidth.toFloat() / iw.toFloat()
             val scaleY = measuredHeight.toFloat() / ih.toFloat()
 
-            //прямоугольник
+            // прямоугольник
             /*canvas?.drawRect(
                 faceLeft * scaleX,
                 faceTop * scaleY,
@@ -67,37 +71,93 @@ class FaceImageView : AppCompatImageView {
                 (faceTop + faceHeight - 1) * scaleY,
                 if (isRegistered) registeredPaint else unregisteredPaint)*/
 
-            //8 линий
+            // 8 линий
             val lineLength = min(faceWidth, faceHeight) / 4
-            canvas?.drawLine(faceLeft * scaleX, faceTop * scaleY, (faceLeft + lineLength) * scaleX, faceTop * scaleY,
-                if (isRegistered) registeredPaint else unregisteredPaint)
-            canvas?.drawLine(faceLeft * scaleX, faceTop * scaleY, faceLeft * scaleX, (faceTop + lineLength)  * scaleY,
-                if (isRegistered) registeredPaint else unregisteredPaint)
-            canvas?.drawRect(faceLeft * scaleX, faceTop * scaleY, faceLeft * scaleX, faceTop * scaleY,
-                if (isRegistered) registeredPaint else unregisteredPaint)
+            canvas?.drawLine(
+                faceLeft * scaleX,
+                faceTop * scaleY,
+                (faceLeft + lineLength) * scaleX,
+                faceTop * scaleY,
+                if (isRegistered) registeredPaint else unregisteredPaint
+            )
+            canvas?.drawLine(
+                faceLeft * scaleX,
+                faceTop * scaleY,
+                faceLeft * scaleX,
+                (faceTop + lineLength) * scaleY,
+                if (isRegistered) registeredPaint else unregisteredPaint
+            )
+            canvas?.drawRect(
+                faceLeft * scaleX, faceTop * scaleY, faceLeft * scaleX, faceTop * scaleY,
+                if (isRegistered) registeredPaint else unregisteredPaint
+            )
 
-            canvas?.drawLine((faceLeft + faceWidth - 1) * scaleX, faceTop * scaleY, (faceLeft + faceWidth - 1 - lineLength) * scaleX, faceTop * scaleY,
-                if (isRegistered) registeredPaint else unregisteredPaint)
-            canvas?.drawLine((faceLeft + faceWidth - 1) * scaleX, faceTop * scaleY, (faceLeft + faceWidth - 1) * scaleX, (faceTop + lineLength)  * scaleY,
-                if (isRegistered) registeredPaint else unregisteredPaint)
-            canvas?.drawRect((faceLeft + faceWidth - 1) * scaleX, faceTop * scaleY, (faceLeft + faceWidth - 1) * scaleX, faceTop * scaleY,
-                if (isRegistered) registeredPaint else unregisteredPaint)
+            canvas?.drawLine(
+                (faceLeft + faceWidth - 1) * scaleX,
+                faceTop * scaleY,
+                (faceLeft + faceWidth - 1 - lineLength) * scaleX,
+                faceTop * scaleY,
+                if (isRegistered) registeredPaint else unregisteredPaint
+            )
+            canvas?.drawLine(
+                (faceLeft + faceWidth - 1) * scaleX,
+                faceTop * scaleY,
+                (faceLeft + faceWidth - 1) * scaleX,
+                (faceTop + lineLength) * scaleY,
+                if (isRegistered) registeredPaint else unregisteredPaint
+            )
+            canvas?.drawRect(
+                (faceLeft + faceWidth - 1) * scaleX,
+                faceTop * scaleY,
+                (faceLeft + faceWidth - 1) * scaleX,
+                faceTop * scaleY,
+                if (isRegistered) registeredPaint else unregisteredPaint
+            )
 
-            canvas?.drawLine(faceLeft * scaleX, (faceTop + faceHeight - 1) * scaleY, (faceLeft + lineLength) * scaleX, (faceTop + faceHeight - 1) * scaleY,
-                if (isRegistered) registeredPaint else unregisteredPaint)
-            canvas?.drawLine(faceLeft * scaleX, (faceTop + faceHeight - 1) * scaleY, faceLeft * scaleX, (faceTop + faceHeight - 1 - lineLength)  * scaleY,
-                if (isRegistered) registeredPaint else unregisteredPaint)
-            canvas?.drawRect(faceLeft * scaleX, (faceTop + faceHeight - 1) * scaleY, faceLeft * scaleX, (faceTop + faceHeight - 1) * scaleY,
-                if (isRegistered) registeredPaint else unregisteredPaint)
+            canvas?.drawLine(
+                faceLeft * scaleX,
+                (faceTop + faceHeight - 1) * scaleY,
+                (faceLeft + lineLength) * scaleX,
+                (faceTop + faceHeight - 1) * scaleY,
+                if (isRegistered) registeredPaint else unregisteredPaint
+            )
+            canvas?.drawLine(
+                faceLeft * scaleX,
+                (faceTop + faceHeight - 1) * scaleY,
+                faceLeft * scaleX,
+                (faceTop + faceHeight - 1 - lineLength) * scaleY,
+                if (isRegistered) registeredPaint else unregisteredPaint
+            )
+            canvas?.drawRect(
+                faceLeft * scaleX,
+                (faceTop + faceHeight - 1) * scaleY,
+                faceLeft * scaleX,
+                (faceTop + faceHeight - 1) * scaleY,
+                if (isRegistered) registeredPaint else unregisteredPaint
+            )
 
-            canvas?.drawLine((faceLeft + faceWidth - 1) * scaleX, (faceTop + faceHeight - 1) * scaleY, (faceLeft + faceWidth - 1 - lineLength) * scaleX, (faceTop + faceHeight - 1) * scaleY,
-                if (isRegistered) registeredPaint else unregisteredPaint)
-            canvas?.drawLine((faceLeft + faceWidth - 1) * scaleX, (faceTop + faceHeight - 1) * scaleY, (faceLeft + faceWidth - 1) * scaleX, (faceTop + faceHeight - 1 - lineLength)  * scaleY,
-                if (isRegistered) registeredPaint else unregisteredPaint)
-            canvas?.drawRect((faceLeft + faceWidth - 1) * scaleX, (faceTop + faceHeight - 1) * scaleY, (faceLeft + faceWidth - 1) * scaleX, (faceTop + faceHeight - 1) * scaleY,
-                if (isRegistered) registeredPaint else unregisteredPaint)
+            canvas?.drawLine(
+                (faceLeft + faceWidth - 1) * scaleX,
+                (faceTop + faceHeight - 1) * scaleY,
+                (faceLeft + faceWidth - 1 - lineLength) * scaleX,
+                (faceTop + faceHeight - 1) * scaleY,
+                if (isRegistered) registeredPaint else unregisteredPaint
+            )
+            canvas?.drawLine(
+                (faceLeft + faceWidth - 1) * scaleX,
+                (faceTop + faceHeight - 1) * scaleY,
+                (faceLeft + faceWidth - 1) * scaleX,
+                (faceTop + faceHeight - 1 - lineLength) * scaleY,
+                if (isRegistered) registeredPaint else unregisteredPaint
+            )
+            canvas?.drawRect(
+                (faceLeft + faceWidth - 1) * scaleX,
+                (faceTop + faceHeight - 1) * scaleY,
+                (faceLeft + faceWidth - 1) * scaleX,
+                (faceTop + faceHeight - 1) * scaleY,
+                if (isRegistered) registeredPaint else unregisteredPaint
+            )
         }
-
     }
 
     fun setFaceRect(fLeft: Int, fTop: Int, fWidth: Int, fHeight: Int, isReg: Boolean) {

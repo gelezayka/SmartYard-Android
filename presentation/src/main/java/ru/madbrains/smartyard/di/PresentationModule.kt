@@ -75,7 +75,7 @@ object PresentationModule {
         viewModel { FaceSettingsViewModel(get(), get()) }
         viewModel { (handle: SavedStateHandle) -> CCTVViewModel(handle, get(), get()) }
         viewModel { (handle: SavedStateHandle) -> CityCamerasViewModel(handle, get(), get(), get()) }
-        viewModel { BurgerViewModel( get(), get(), get(), get()) }
+        viewModel { BurgerViewModel(get(), get(), get(), get()) }
         viewModel { CCTVTrimmerViewModel(get()) }
         viewModel { PayAddressViewModel(get()) }
         viewModel { PayBottomSheetDialogViewModel(get()) }

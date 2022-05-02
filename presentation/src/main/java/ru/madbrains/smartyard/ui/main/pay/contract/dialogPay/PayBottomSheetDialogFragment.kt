@@ -14,7 +14,6 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.IsReadyToPayRequest
@@ -41,7 +40,6 @@ import timber.log.Timber
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
-import kotlin.Exception
 
 /**
  * @author Nail Shakurov
@@ -53,12 +51,12 @@ fun EditText.inputFilterDecimal(
     // maximum digits including point and without decimal places
     maxDigitsIncludingPoint: Int,
     maxDecimalPlaces: Int // maximum decimal places
-){
+) {
     try {
         filters = arrayOf<InputFilter>(
             DecimalDigitsInputFilter(maxDigitsIncludingPoint, maxDecimalPlaces)
         )
-    }catch (e: PatternSyntaxException){
+    } catch (e: PatternSyntaxException) {
         isEnabled = false
         hint = e.message
     }
@@ -66,15 +64,21 @@ fun EditText.inputFilterDecimal(
 
 // class to decimal digits input filter
 class DecimalDigitsInputFilter(
-    maxDigitsIncludingPoint: Int, maxDecimalPlaces: Int
+    maxDigitsIncludingPoint: Int,
+    maxDecimalPlaces: Int
 ) : InputFilter {
     private val pattern: Pattern = Pattern.compile(
-        "[0-9]{0," + (maxDigitsIncludingPoint - 1) + "}+((\\.[0-9]{0,"
-                + (maxDecimalPlaces - 1) + "})?)||(\\.)?"
+        "[0-9]{0," + (maxDigitsIncludingPoint - 1) + "}+((\\.[0-9]{0," +
+            (maxDecimalPlaces - 1) + "})?)||(\\.)?"
     )
 
     override fun filter(
-        p0: CharSequence?, p1: Int, p2: Int, p3: Spanned?, p4: Int, p5: Int
+        p0: CharSequence?,
+        p1: Int,
+        p2: Int,
+        p3: Spanned?,
+        p4: Int,
+        p5: Int
     ): CharSequence? {
         p3?.apply {
             val matcher: Matcher = pattern.matcher(p3)
@@ -132,7 +136,7 @@ class PayBottomSheetDialogFragment : BottomSheetDialogFragment() {
             binding.tvNumber.text = "№ $contractName"
         }
 
-        //задаем максимальное количество знаков после запятой
+        // задаем максимальное количество знаков после запятой
         binding.etMoneyBalance.inputFilterDecimal(8, 2)
 
         binding.etMoneyBalance.addTextChangedListener {
@@ -142,7 +146,7 @@ class PayBottomSheetDialogFragment : BottomSheetDialogFragment() {
             }
         }
 
-        //делаем так, чтобы при появлении виртуальной клавиатуры было видно поле ввода для суммы
+        // делаем так, чтобы при появлении виртуальной клавиатуры было видно поле ввода для суммы
         dialog?.setOnShowListener {
             val dialog = it as BottomSheetDialog
             val bottomSheet = dialog.findViewById<View>(R.id.design_bottom_sheet)
@@ -203,8 +207,10 @@ class PayBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
         binding.btnSber.setOnClickListener {
             if (binding.etMoneyBalance.text.toString().toFloat() > 0f) {
-                payBottomSheetDialogViewModel.sberPay(binding.etMoneyBalance.text.toString(),
-                    clientId, requireContext())
+                payBottomSheetDialogViewModel.sberPay(
+                    binding.etMoneyBalance.text.toString(),
+                    clientId, requireContext()
+                )
                 binding.btnSber.isEnabled = false
             } else {
                 onError(getString(R.string.payments_error_2))
@@ -213,14 +219,15 @@ class PayBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
         mMainViewModel.sberPayIntent.observe(
             viewLifecycleOwner,
-            EventObserver{
+            EventObserver {
                 binding.btnSber.isEnabled = true
                 if (it?.orderNumber?.isNotEmpty() == true) {
                     onSuccess()
                 } else {
                     onError(getString(R.string.payments_error_1))
                 }
-            })
+            }
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

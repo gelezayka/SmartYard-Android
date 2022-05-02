@@ -15,7 +15,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
-import ru.madbrains.smartyard.R
 import ru.madbrains.smartyard.databinding.DialogDeleteReasonBinding
 import timber.log.Timber
 

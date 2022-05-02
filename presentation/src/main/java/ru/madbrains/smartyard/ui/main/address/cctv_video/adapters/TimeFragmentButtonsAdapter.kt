@@ -34,7 +34,7 @@ class TimeFragmentButtonsAdapter(
             val rangeFrom = startRange
             var rangeTo = rangeFrom.plusHours(INTERVAL_STEP_)
 
-            //интервал вида 21.00 - 00.00 показываем как 21.00 - 23.59
+            // интервал вида 21.00 - 00.00 показываем как 21.00 - 23.59
             if (rangeTo.hour == 0 && rangeTo.minute == 0 && rangeTo.second == 0) {
                 rangeTo = rangeTo.minusSeconds(1)
             }
@@ -42,8 +42,8 @@ class TimeFragmentButtonsAdapter(
             var leftMargin = rangeTo
             var rightMargin = rangeFrom
 
-            //ищем пересечения с интервалами из архива
-            availableRanges.forEach {range ->
+            // ищем пересечения с интервалами из архива
+            availableRanges.forEach { range ->
                 if ((rangeFrom < range.endDate) && (range.startDate < rangeTo)) {
                     val intersectionLeft = if (rangeFrom > range.startDate) rangeFrom else range.startDate
                     val intersectionRight = if (rangeTo < range.endDate) rangeTo else range.endDate
@@ -57,7 +57,7 @@ class TimeFragmentButtonsAdapter(
             }
 
             if (leftMargin < rightMargin) {
-                //есть пересечение с интервалами из архива
+                // есть пересечение с интервалами из архива
                 result.add(TimeInterval(leftMargin, rightMargin))
             }
 

@@ -12,7 +12,11 @@ import ru.madbrains.smartyard.MapFragment
 import ru.madbrains.smartyard.R
 import ru.madbrains.smartyard.databinding.CityCamerasMapFragmentBinding
 import ru.madbrains.smartyard.toLatLng
-import ru.madbrains.smartyard.ui.map.*
+import ru.madbrains.smartyard.ui.map.MapProvider
+import ru.madbrains.smartyard.ui.map.MapSettings
+import ru.madbrains.smartyard.ui.map.MarkerData
+import ru.madbrains.smartyard.ui.map.MarkerType
+import ru.madbrains.smartyard.ui.map.OSMMap
 
 class CityCamerasMapFragment : MapFragment() {
     private var _binding: CityCamerasMapFragmentBinding? = null
@@ -20,8 +24,11 @@ class CityCamerasMapFragment : MapFragment() {
 
     private val viewModel: CityCamerasViewModel by sharedStateViewModel()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = CityCamerasMapFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -77,5 +84,4 @@ class CityCamerasMapFragment : MapFragment() {
 
         viewModel.camerasBoundingBox = (this.mapProvider?.map as? OSMMap)?.getBoundingBox()
     }
-
 }

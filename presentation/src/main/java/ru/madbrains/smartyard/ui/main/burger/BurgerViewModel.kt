@@ -28,7 +28,7 @@ class BurgerViewModel(
 
     private val _burgerList = MutableLiveData<List<BurgerModel>>()
     val burgerList: LiveData<List<BurgerModel>>
-      get() = _burgerList
+        get() = _burgerList
 
     private val _navigateToFragment = MutableLiveData<Event<Int>>()
     val navigateToFragment: LiveData<Event<Int>>
@@ -67,7 +67,7 @@ class BurgerViewModel(
     }
 
     private fun getBurgerMenu() {
-        viewModelScope.withProgress({false}) {
+        viewModelScope.withProgress({ false }) {
             val list = mutableListOf(
                 BurgerModel(
                     orderId = 100,
@@ -96,7 +96,7 @@ class BurgerViewModel(
             )
 
             try {
-                //загружаем расширения с использованием API методов
+                // загружаем расширения с использованием API методов
                 extInteractor.list()?.let { extList ->
                     extList.data.forEach { item ->
                         if (item.extId != null && item.order != null && item.caption != null) {
@@ -117,13 +117,9 @@ class BurgerViewModel(
                         }
                     }
                 }
-            } catch (e: Exception) {
+            } catch (e: Exception) { }
 
-            }
-
-            list.sortWith(compareBy {
-                it.orderId
-            })
+            list.sortWith(compareBy { it.orderId })
             _burgerList.value = list
         }
     }

@@ -20,7 +20,11 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -45,11 +49,11 @@ class CCTVOnlineTab : Fragment(), ExitFullscreenListener {
     private val binding get() = _binding!!
 
     private var mPlayer: SimpleExoPlayer? = null
-    private var forceVideoTrack = true  //принудительное использование треков с высоким разрешением
+    private var forceVideoTrack = true // принудительное использование треков с высоким разрешением
     private val mCCTVViewModel: CCTVViewModel by sharedStateViewModel()
     private var mExoPlayerFullscreen = false
 
-    //для полноэкранного режима
+    // для полноэкранного режима
     private var lpVideoWrap: ViewGroup.LayoutParams? = null
     private var playerResizeMode: Int = 0
 
@@ -118,7 +122,7 @@ class CCTVOnlineTab : Fragment(), ExitFullscreenListener {
 
             binding.videoWrap.background = ContextCompat.getDrawable(requireContext(), R.drawable.background_radius_video_clip)
 
-            //возвращаем дефолтные layouts
+            // возвращаем дефолтные layouts
             if (lpVideoWrap != null) {
                 binding.videoWrap.layoutParams = lpVideoWrap
                 binding.videoWrap.requestLayout()
@@ -178,10 +182,10 @@ class CCTVOnlineTab : Fragment(), ExitFullscreenListener {
         Timber.d("debug_dmm create")
 
         val trackSelector = DefaultTrackSelector(requireContext())
-        val player  = SimpleExoPlayer.Builder(requireContext())
+        val player = SimpleExoPlayer.Builder(requireContext())
             .setTrackSelector(trackSelector)
             .build()
-        //player.addAnalyticsListener(EventLogger(trackSelector))
+        // player.addAnalyticsListener(EventLogger(trackSelector))
 
         videoView.player = player
         videoView.useController = false
@@ -235,8 +239,10 @@ class CCTVOnlineTab : Fragment(), ExitFullscreenListener {
                 }
             }
 
-            override fun onTracksChanged(trackGroups: TrackGroupArray,
-                trackSelections: TrackSelectionArray) {
+            override fun onTracksChanged(
+                trackGroups: TrackGroupArray,
+                trackSelections: TrackSelectionArray
+            ) {
                 super.onTracksChanged(trackGroups, trackSelections)
 
                 if (!forceVideoTrack) {
@@ -247,7 +253,7 @@ class CCTVOnlineTab : Fragment(), ExitFullscreenListener {
                 val maxSupportedWidth = (decoderInfo?.capabilities?.videoCapabilities?.supportedWidths?.upper ?: 0) * RESOLUTION_TOLERANCE
                 val maxSupportedHeight = (decoderInfo?.capabilities?.videoCapabilities?.supportedHeights?.upper ?: 0) * RESOLUTION_TOLERANCE
 
-                (player.trackSelector as? DefaultTrackSelector)?.let{ trackSelector ->
+                (player.trackSelector as? DefaultTrackSelector)?.let { trackSelector ->
                     trackSelector.currentMappedTrackInfo?.let { mappedTrackInfo ->
                         for (k in 0 until mappedTrackInfo.rendererCount) {
                             if (mappedTrackInfo.getRendererType(k) == C.TRACK_TYPE_VIDEO) {
@@ -257,8 +263,11 @@ class CCTVOnlineTab : Fragment(), ExitFullscreenListener {
                                     for (j in 0 until rendererTrackGroups[i].length) {
                                         if (mappedTrackInfo.getTrackSupport(k, i, j) == C.FORMAT_HANDLED ||
                                             mappedTrackInfo.getTrackSupport(k, i, j) == C.FORMAT_EXCEEDS_CAPABILITIES &&
-                                                (maxSupportedWidth >= rendererTrackGroups[i].getFormat(j).width ||
-                                                maxSupportedHeight >= rendererTrackGroups[i].getFormat(j).height)) {
+                                            (
+                                                maxSupportedWidth >= rendererTrackGroups[i].getFormat(j).width ||
+                                                    maxSupportedHeight >= rendererTrackGroups[i].getFormat(j).height
+                                                )
+                                        ) {
                                             tracks.add(j)
                                         }
                                     }
@@ -273,7 +282,6 @@ class CCTVOnlineTab : Fragment(), ExitFullscreenListener {
                     }
                 }
             }
-
         })
         return player
     }
@@ -307,7 +315,7 @@ class CCTVOnlineTab : Fragment(), ExitFullscreenListener {
             Timber.d("debug_dmm __new instance $this")
         }
 
-        const val RESOLUTION_TOLERANCE = 1.08  // коэффициент допуска видео разрешения
+        const val RESOLUTION_TOLERANCE = 1.08 // коэффициент допуска видео разрешения
     }
 
     class GridSpacingItemDecoration(

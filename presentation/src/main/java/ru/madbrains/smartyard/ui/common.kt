@@ -1,7 +1,13 @@
 package ru.madbrains.smartyard.ui
 
-import android.app.*
+import android.app.Activity
 import android.app.Activity.RESULT_OK
+import android.app.Dialog
+import android.app.NotificationChannel
+import android.app.PendingIntent
+import android.app.TimePickerDialog
+import android.app.DatePickerDialog
+import android.app.NotificationManager
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
@@ -63,6 +69,7 @@ import timber.log.Timber
 fun showStandardAlert(context: Context, @StringRes msgResId: Int, callback: listenerEmpty? = null) {
     showStandardAlert(context, context.getString(msgResId), callback)
 }
+
 fun showStandardAlert(
     context: Context,
     @StringRes titleResId: Int,
@@ -346,7 +353,12 @@ fun updateAllWidget(context: Context) {
     )
 }
 
-fun requestPermission(permissions: ArrayList<String>, context: Context, onGranted: listenerEmpty? = null, onDenied: listenerEmpty? = null) {
+fun requestPermission(
+    permissions: ArrayList<String>,
+    context: Context,
+    onGranted: listenerEmpty? = null,
+    onDenied: listenerEmpty? = null
+) {
     Dexter.withContext(context)
         .withPermissions(permissions)
         .withListener(object : MultiplePermissionsListener {
@@ -366,10 +378,12 @@ fun requestPermission(permissions: ArrayList<String>, context: Context, onGrante
             }
         }).check()
 }
+
 fun resourceToBitmap(context: Context, drawableSrc: Int): Bitmap {
     val drawable = ResourcesCompat.getDrawable(context.resources, drawableSrc, null) as Drawable
     return drawableToBitmap(drawable)
 }
+
 private fun drawableToBitmap(vectorDrawable: Drawable): Bitmap {
     val bitmap = Bitmap.createBitmap(
         vectorDrawable.intrinsicWidth,
@@ -381,6 +395,7 @@ private fun drawableToBitmap(vectorDrawable: Drawable): Bitmap {
     vectorDrawable.draw(canvas)
     return bitmap
 }
+
 fun createIconWithText(
     context: Context,
     @DrawableRes bgRes: Int,
@@ -425,7 +440,7 @@ private inline fun <reified T : Enum<T>> Int.toEnum(): T = enumValues<T>()[this]
 
 private const val CHANNEL_ID = "smartyard_v6_"
 
-//Анимация: fade in, затем fade out
+// Анимация: fade in, затем fade out
 fun animationFadeInFadeOut(view: View?) {
     view?.let {
         it.apply {
@@ -437,7 +452,9 @@ fun animationFadeInFadeOut(view: View?) {
                 .withEndAction {
                     animate()
                         .alpha(0f)
-                        .setDuration(resources.getInteger(android.R.integer.config_longAnimTime).toLong())
+                        .setDuration(
+                            resources.getInteger(android.R.integer.config_longAnimTime).toLong()
+                        )
                         .withEndAction {
                             visibility = View.INVISIBLE
                         }
@@ -449,13 +466,18 @@ fun animationFadeInFadeOut(view: View?) {
 class DatePickerFragment(
     private val selectedDate: LocalDate,
     private val minDate: LocalDate? = null,
-    private val callback: listenerGeneric<LocalDate>) : DialogFragment(), DatePickerDialog.OnDateSetListener {
+    private val callback: listenerGeneric<LocalDate>
+) : DialogFragment(), DatePickerDialog.OnDateSetListener {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = DatePickerDialog(requireContext(), this,
-            selectedDate.year, selectedDate.monthValue - 1, selectedDate.dayOfMonth)
+        val dialog = DatePickerDialog(
+            requireContext(), this,
+            selectedDate.year, selectedDate.monthValue - 1, selectedDate.dayOfMonth
+        )
         dialog.datePicker.maxDate = System.currentTimeMillis()
         if (minDate != null) {
-            dialog.datePicker.minDate = ZonedDateTime.of(minDate, LocalTime.of(0, 0), ZoneId.systemDefault()).toInstant().toEpochMilli()
+            dialog.datePicker.minDate =
+                ZonedDateTime.of(minDate, LocalTime.of(0, 0), ZoneId.systemDefault()).toInstant()
+                    .toEpochMilli()
         }
         return dialog
     }
@@ -467,11 +489,15 @@ class DatePickerFragment(
 
 class TimePickerFragment(
     private val selectedTime: LocalTime,
-    private val callback: listenerGeneric<LocalTime>) : DialogFragment(), TimePickerDialog.OnTimeSetListener {
+    private val callback: listenerGeneric<LocalTime>
+) : DialogFragment(), TimePickerDialog.OnTimeSetListener {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return TimePickerDialog(requireContext(), this, selectedTime.hour, selectedTime.minute,
-            DateFormat.is24HourFormat(requireContext()))
+        return TimePickerDialog(
+            requireContext(), this, selectedTime.hour, selectedTime.minute,
+            DateFormat.is24HourFormat(requireContext())
+        )
     }
+
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
         callback(LocalTime.of(hourOfDay, minute))
     }

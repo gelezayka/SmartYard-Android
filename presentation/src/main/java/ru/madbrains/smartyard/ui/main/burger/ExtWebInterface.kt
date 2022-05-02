@@ -39,25 +39,26 @@ class ExtWebInterface(
     companion object {
         const val WEB_INTERFACE_OBJECT = "Android"
 
-        const val JS_INJECTION = """
+        const val JS_INJECTION =
+            """
             function bearerToken() {
                 return Android.bearerToken();
             }
             
             function postLoadingStarted() {
-                ${WEB_INTERFACE_OBJECT}.postLoadingStarted();
+                $WEB_INTERFACE_OBJECT.postLoadingStarted();
             }
             
             function postloadingFinished() {
-                ${WEB_INTERFACE_OBJECT}.postLoadingFinished();
+                $WEB_INTERFACE_OBJECT.postLoadingFinished();
             }
             
             function postLoadingFinished() {
-                ${WEB_INTERFACE_OBJECT}.postLoadingFinished();
+                $WEB_INTERFACE_OBJECT.postLoadingFinished();
             }
             
             function postRefreshParent(timeout) {
-                ${WEB_INTERFACE_OBJECT}.postRefreshParent(timeout)
+                $WEB_INTERFACE_OBJECT.postRefreshParent(timeout)
             }
         """
     }

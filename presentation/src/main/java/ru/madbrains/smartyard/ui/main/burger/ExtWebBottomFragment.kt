@@ -5,10 +5,16 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.*
+import android.webkit.ConsoleMessage
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -29,7 +35,7 @@ class ExtWebBottomFragment : BottomSheetDialogFragment() {
         super.onCreate(savedInstanceState)
 
         setStyle(STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
-        
+
         arguments?.let {
             url = ExtWebBottomFragmentArgs.fromBundle(it).url
             hostName = Uri.parse(url)?.host ?: ""
@@ -37,7 +43,8 @@ class ExtWebBottomFragment : BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentExtWebBottomBinding.inflate(inflater, container, false)
@@ -51,12 +58,12 @@ class ExtWebBottomFragment : BottomSheetDialogFragment() {
         binding.root.requestLayout()
     }
 
-    //пересчитваем высоту WebView для правильной работы скроллинга
+    // пересчитваем высоту WebView для правильной работы скроллинга
     private fun changeLayout() {
         val position = IntArray(2)
         binding.wvExtBottom.getLocationOnScreen(position)
         val newHeight = requireContext().resources.displayMetrics.heightPixels - position[1]
-        //Timber.d("debug_web changeLayout newHeight = $newHeight")
+        // Timber.d("debug_web changeLayout newHeight = $newHeight")
         if (newHeight > 0) {
             val lp = binding.wvExtBottom.layoutParams
             lp.height = newHeight
@@ -107,7 +114,8 @@ class ExtWebBottomFragment : BottomSheetDialogFragment() {
                 request: WebResourceRequest?
             ): WebResourceResponse? {
                 return if (request?.url?.path?.endsWith("lanta.js") == true) {
-                    WebResourceResponse("text/javascript", "utf-8",
+                    WebResourceResponse(
+                        "text/javascript", "utf-8",
                         ByteArrayInputStream(ExtWebInterface.JS_INJECTION.toByteArray())
                     )
                 } else {
@@ -125,31 +133,39 @@ class ExtWebBottomFragment : BottomSheetDialogFragment() {
                 super.onPageFinished(view, url)
 
                 Timber.d("debug_web pageFinished")
-                //"костыль" с отсроченным вызовом пересчёта высоты WebView для правильной работы скроллинга
-                Handler().postDelayed({
-                    changeLayout()
-                }, 800)
+                // "костыль" с отсроченным вызовом пересчёта высоты WebView для правильной работы скроллинга
+                Handler(Looper.getMainLooper()).postDelayed(
+                    {
+                        changeLayout()
+                    },
+                    800
+                )
             }
         }
 
-        binding.wvExtBottom.addJavascriptInterface(ExtWebInterface(viewModel,
-            object : ExtWebInterface.Callback {
-                override fun onPostLoadingStarted() {
-                    requireActivity().runOnUiThread {
-                        binding.pbWebViewBottom.visibility = View.VISIBLE
+        binding.wvExtBottom.addJavascriptInterface(
+            ExtWebInterface(
+                viewModel,
+                object : ExtWebInterface.Callback {
+                    override fun onPostLoadingStarted() {
+                        requireActivity().runOnUiThread {
+                            binding.pbWebViewBottom.visibility = View.VISIBLE
+                        }
                     }
-                }
 
-                override fun onPostLoadingFinished() {
-                    requireActivity().runOnUiThread {
-                        binding.pbWebViewBottom.visibility = View.INVISIBLE
+                    override fun onPostLoadingFinished() {
+                        requireActivity().runOnUiThread {
+                            binding.pbWebViewBottom.visibility = View.INVISIBLE
+                        }
                     }
                 }
-            }),
-            ExtWebInterface.WEB_INTERFACE_OBJECT)
+            ),
+            ExtWebInterface.WEB_INTERFACE_OBJECT
+        )
 
         dialog?.let {
-            val bottomSheet = it.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            val bottomSheet =
+                it.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             val behavior = BottomSheetBehavior.from(bottomSheet)
             behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -162,7 +178,7 @@ class ExtWebBottomFragment : BottomSheetDialogFragment() {
                 }
 
                 override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                    //ничего не делаем
+                    // ничего не делаем
                 }
             })
             it.setOnShowListener {

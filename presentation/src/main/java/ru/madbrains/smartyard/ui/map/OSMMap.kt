@@ -92,7 +92,7 @@ class OSMMap(settings: MapSettings) : SimpleMap(settings) {
             Runnable {
                 try {
                     map?.zoomToBoundingBox(boundingBox, true, borderSize, MAX_FOCUS_ZOOM.toDouble(), moveDuration)
-                } catch(e: Exception) {}
+                } catch (e: Exception) {}
             }
         )
         map?.invalidate()
@@ -142,7 +142,7 @@ class OSMMap(settings: MapSettings) : SimpleMap(settings) {
         return marker
     }
 
-    //для запоминания текущего положения карты камер
+    // для запоминания текущего положения карты камер
     fun getBoundingBox(): BoundingBox? {
         return map?.boundingBox
     }

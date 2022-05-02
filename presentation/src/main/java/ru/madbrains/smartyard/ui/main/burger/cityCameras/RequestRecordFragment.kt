@@ -9,7 +9,9 @@ import android.view.WindowManager
 import android.widget.AdapterView
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.sharedStateViewModel
-import org.threeten.bp.*
+import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
 import ru.madbrains.smartyard.EventObserver
 import ru.madbrains.smartyard.R
@@ -25,11 +27,14 @@ class RequestRecordFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val viewModel: CityCamerasViewModel by sharedStateViewModel()
     private var recordDate: LocalDate = LocalDate.now()
     private var recordTime: LocalTime = LocalTime.now()
-    private val durationList = listOf(5, 10, 15, 20, 30, 40, 50, 60)  // список возможных вариантов продолжительности записи в минутах
+    private val durationList = listOf(5, 10, 15, 20, 30, 40, 50, 60) // список возможных вариантов продолжительности записи в минутах
     private var selectedDurationPosition = 1
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentRequestRecordBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -64,8 +69,12 @@ class RequestRecordFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.spinnerRequestRecordDuration.setSelection(selectedDurationPosition)
 
         binding.btnRequestRecord.setOnClickListener {
-            viewModel.createIssue(recordDate, recordTime, durationList[selectedDurationPosition],
-                binding.tvRequestRecordComments.text.toString())
+            viewModel.createIssue(
+                recordDate,
+                recordTime,
+                durationList[selectedDurationPosition],
+                binding.tvRequestRecordComments.text.toString()
+            )
         }
 
         updateDateTime()
@@ -104,13 +113,17 @@ class RequestRecordFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun updateDate() {
-        binding.tvRequestRecordDate.text = resources.getString(R.string.request_record_date, recordDate.format(
-            DateTimeFormatter.ofPattern("d.MM.yyyy")))
+        binding.tvRequestRecordDate.text = resources.getString(
+            R.string.request_record_date,
+            recordDate.format(DateTimeFormatter.ofPattern("d.MM.yyyy"))
+        )
     }
 
     private fun updateTime() {
-        binding.tvRequestRecordTime.text = resources.getString(R.string.request_record_time, recordTime.format(
-            DateTimeFormatter.ofPattern("HH-mm")))
+        binding.tvRequestRecordTime.text = resources.getString(
+            R.string.request_record_time,
+            recordTime.format(DateTimeFormatter.ofPattern("HH-mm"))
+        )
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -119,6 +132,5 @@ class RequestRecordFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        
     }
 }

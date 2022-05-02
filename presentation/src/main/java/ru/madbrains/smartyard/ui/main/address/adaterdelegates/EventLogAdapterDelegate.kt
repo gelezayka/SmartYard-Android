@@ -24,7 +24,8 @@ class EventLogAdapterDelegate(private val setting: ParentListAdapterSetting) :
         return EventLogViewHolder(inflater.inflate(R.layout.item_event_log, parent, false))
     }
 
-    override fun onBindViewHolder(items: List<DisplayableItem>,
+    override fun onBindViewHolder(
+        items: List<DisplayableItem>,
         position: Int,
         holder: RecyclerView.ViewHolder,
         payloads: MutableList<Any>
@@ -33,7 +34,7 @@ class EventLogAdapterDelegate(private val setting: ParentListAdapterSetting) :
         val eventLog: EventLogModel = items[position] as EventLogModel
         vh.caption.text = eventLog.caption
         vh.count.text = eventLog.counter.toString()
-        vh.itemView.setOnClickListener {setting.clickEventLog(eventLog)}
+        vh.itemView.setOnClickListener { setting.clickEventLog(eventLog) }
     }
 
     internal class EventLogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

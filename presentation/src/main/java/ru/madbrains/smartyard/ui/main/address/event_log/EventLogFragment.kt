@@ -34,8 +34,11 @@ class EventLogFragment : Fragment() {
     private var prevLoadedIndex = -1
     private var savedLogTypeWidth = 0
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentEventLogBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -43,18 +46,23 @@ class EventLogFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        binding.spinnerEventLogType.adapter = ArrayAdapter.createFromResource(requireContext(),
-            R.array.event_log_types, R.layout.item_event_log_type_spinner).apply {
+        binding.spinnerEventLogType.adapter = ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.event_log_types,
+            R.layout.item_event_log_type_spinner
+        ).apply {
             setDropDownViewResource(R.layout.event_log_type_spinner_drop_down)
         }
 
-        binding.spinnerEventLogType.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?,
+        binding.spinnerEventLogType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
                 view: View?,
                 position: Int,
-                id: Long) {
+                id: Long
+            ) {
 
-                //изменение ширины фильтра "Тип события" в зависимости от выбранного
+                // изменение ширины фильтра "Тип события" в зависимости от выбранного
                 (parent?.getChildAt(0) as? TextView)?.let {
                     val lp = binding.spinnerEventLogType.layoutParams
                     it.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
@@ -110,18 +118,22 @@ class EventLogFragment : Fragment() {
             binding.spinnerEventLogFlats.isVisible = false
         } else {
             binding.spinnerEventLogFlats.isVisible = true
-            binding.spinnerEventLogFlats.adapter = ArrayAdapter(requireContext(),
+            binding.spinnerEventLogFlats.adapter = ArrayAdapter(
+                requireContext(),
                 R.layout.item_event_log_flats_spinner,
-                mViewModel.flatsAll.map {"Квартира ${it.flatNumber}"}.toMutableList().also {
+                mViewModel.flatsAll.map { "Квартира ${it.flatNumber}" }.toMutableList().also {
                     it.add(0, "Все квартиры")
-                }).apply {
+                }
+            ).apply {
                 setDropDownViewResource(R.layout.event_log_flats_spinner_drop_down)
             }
-            binding.spinnerEventLogFlats.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?,
+            binding.spinnerEventLogFlats.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
                     view: View?,
                     position: Int,
-                    id: Long) {
+                    id: Long
+                ) {
 
                     var flat: Flat? = null
                     if (position > 0) {
@@ -172,7 +184,7 @@ class EventLogFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        //изменение ширины фильтра "Тип события" в зависимости от выбранного
+        // изменение ширины фильтра "Тип события" в зависимости от выбранного
         if (savedLogTypeWidth > 0) {
             val lp = binding.spinnerEventLogType.layoutParams
             lp.width = savedLogTypeWidth
@@ -190,7 +202,7 @@ class EventLogFragment : Fragment() {
             }
         }
 
-        binding.rvEventLogParent.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+        binding.rvEventLogParent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
@@ -200,8 +212,9 @@ class EventLogFragment : Fragment() {
 
                 val llm = binding.rvEventLogParent.layoutManager as LinearLayoutManager
                 val itemCount = binding.rvEventLogParent.adapter?.itemCount ?: 0
-                if (dy > 0 && llm.findLastVisibleItemPosition() == itemCount - 1
-                    && itemCount < mViewModel.eventDaysFilter.size) {
+                if (dy > 0 && llm.findLastVisibleItemPosition() == itemCount - 1 &&
+                    itemCount < mViewModel.eventDaysFilter.size
+                ) {
                     mViewModel.getMoreEvents()
                 }
             }
@@ -258,7 +271,6 @@ class EventLogFragment : Fragment() {
         mViewModel.progress.observe(viewLifecycleOwner) {
             binding.pbEventLog.isVisible = it
         }
-
     }
 
     private fun scrollToDay(day: LocalDate) {
@@ -268,22 +280,20 @@ class EventLogFragment : Fragment() {
         Timber.d("__Q__ eventsDay: $eventsDay")
 
         var nearestIndex = -1
-        if (eventsDay.isNotEmpty())
-        {
+        if (eventsDay.isNotEmpty()) {
             if (eventsDay.first() >= day && day >= eventsDay.last()) {
                 for (i in 0 until eventsDay.size - 1) {
                     if (eventsDay[i] >= day && day >= eventsDay[i + 1]) {
                         val day0 = day.toEpochDay()
                         val day1 = eventsDay[i].toEpochDay()
                         val day2 = eventsDay[i + 1].toEpochDay()
-                        nearestIndex = if (day1 - day0 <= day0 - day2 ) i else i + 1
+                        nearestIndex = if (day1 - day0 <= day0 - day2) i else i + 1
                         break
                     }
                 }
                 if (nearestIndex >= 0) {
                     smoothScrollTo(llm, nearestIndex)
                 }
-
             } else {
                 if (day > eventsDay.first()) {
                     smoothScrollTo(llm, 0)

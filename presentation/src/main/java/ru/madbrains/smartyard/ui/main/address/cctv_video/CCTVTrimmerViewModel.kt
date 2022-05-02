@@ -62,7 +62,7 @@ class CCTVTrimmerViewModel(
 
     val positionRecyclerViewInterval = MutableLiveData<Int>(0)
 
-    //доступные интервалы архива для выбранной камеры
+    // доступные интервалы архива для выбранной камеры
     private var availableRanges = mutableListOf<AvailableRange>()
 
     private lateinit var chosenCamera: CCTVData
@@ -171,7 +171,7 @@ class CCTVTrimmerViewModel(
         stopVideoPlay()
         if (mode == UiMode.Trim && ::mCurrentPlayerInterval.isInitialized) {
             val centerTime = mCurrentPlayerInterval.from.plusSeconds(currentPositionInMs / 1000)
-            //val newInterval = mCurrentPlayerInterval.getTrimInterval(centerTime)
+            // val newInterval = mCurrentPlayerInterval.getTrimInterval(centerTime)
             val newInterval = getTrimInterval(centerTime)
             changeTrimmerInterval(newInterval, true)
         }
@@ -202,7 +202,7 @@ class CCTVTrimmerViewModel(
                     normalSpeed()
                 }
                 Player.STATE_ENDED -> {
-                    //игнорируем, так как обрабатывается в CCTVTimmerFragment
+                    // игнорируем, так как обрабатывается в CCTVTimmerFragment
                 }
                 else -> {
                     stopVideoPlay()
@@ -381,7 +381,7 @@ class CCTVTrimmerViewModel(
         Timber.d("debug_dmm setSelect")
         mCurrentSelection = timeInterval
     }
-    
+
     fun setAvailableRanges(ranges: List<AvailableRange>) {
         availableRanges = ranges.toMutableList()
     }
@@ -404,7 +404,7 @@ class CCTVTrimmerViewModel(
 
     companion object {
         const val dialogPrepareVideo: Int = 1
-        const val SEEK_STEP = 15_000L  // интервал перемотки в миллисекундах видео архива при двойном тапе
+        const val SEEK_STEP = 15_000L // интервал перемотки в миллисекундах видео архива при двойном тапе
     }
 
     enum class UiMode {

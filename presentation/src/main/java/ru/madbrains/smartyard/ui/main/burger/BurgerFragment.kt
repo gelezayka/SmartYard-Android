@@ -16,7 +16,6 @@ import ru.madbrains.smartyard.EventObserver
 import ru.madbrains.smartyard.R
 import ru.madbrains.smartyard.databinding.FragmentBurgerBinding
 import ru.madbrains.smartyard.ui.showStandardAlert
-import timber.log.Timber
 
 class BurgerFragment : Fragment() {
     private var _binding: FragmentBurgerBinding? = null
@@ -26,8 +25,11 @@ class BurgerFragment : Fragment() {
 
     private lateinit var adapter: ListDelegationAdapter<List<BurgerModel>>
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentBurgerBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -94,7 +96,7 @@ class BurgerFragment : Fragment() {
 
         viewModel.navigateToWebView.observe(
             viewLifecycleOwner,
-            EventObserver{
+            EventObserver {
                 val action = BurgerFragmentDirections.actionBurgerFragmentToExtWebViewFragment(it.basePath, it.code)
                 this.findNavController().navigate(action)
             }

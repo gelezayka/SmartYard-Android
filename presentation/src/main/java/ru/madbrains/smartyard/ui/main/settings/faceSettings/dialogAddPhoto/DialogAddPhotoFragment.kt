@@ -7,7 +7,11 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -29,8 +33,11 @@ class DialogAddPhotoFragment(
     private var _binding: DialogAddPhotoBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = DialogAddPhotoBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -49,9 +56,11 @@ class DialogAddPhotoFragment(
             .asBitmap()
             .load(photoUrl)
             .transform(RoundedCorners(binding.ivAddFacePhoto.resources.getDimensionPixelSize(R.dimen.event_log_detail_corner)))
-            .into(object : CustomTarget<Bitmap>(){
-                override fun onResourceReady(resource: Bitmap,
-                    transition: Transition<in Bitmap>?) {
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap>?
+                ) {
                     binding.ivAddFacePhoto.setImageBitmap(resource)
                 }
 

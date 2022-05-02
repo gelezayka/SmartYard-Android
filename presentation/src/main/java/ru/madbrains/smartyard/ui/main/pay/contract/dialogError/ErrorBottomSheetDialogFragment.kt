@@ -22,7 +22,6 @@ class ErrorBottomSheetDialogFragment : BottomSheetDialogFragment() {
     ): View {
         _binding = FragmentErrorButtomSheetDialogBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

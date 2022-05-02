@@ -3,7 +3,6 @@ package ru.madbrains.smartyard.ui.main.address.cctv_video
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Parcelable
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -24,12 +23,11 @@ import ru.madbrains.smartyard.GenericViewModel
 import ru.madbrains.smartyard.ui.main.address.cctv_video.CCTVDetailFragment.Companion.ARCHIVE_TAB_POSITION
 import ru.madbrains.smartyard.ui.main.address.cctv_video.CCTVDetailFragment.Companion.ONLINE_TAB_POSITION
 import ru.madbrains.smartyard.ui.main.address.models.interfaces.VideoCameraModelP
-import timber.log.Timber
 
 @Parcelize
 data class AvailableRange(
-    val duration: Int,  //Длительность интервала в секундах
-    val from: Int,  //Timestamp начала интервала в секундах
+    val duration: Int, // Длительность интервала в секундах
+    val from: Int, // Timestamp начала интервала в секундах
     val startDate: LocalDateTime,
     val endDate: LocalDateTime
 ) : Parcelable
@@ -53,7 +51,7 @@ class CCTVViewModel(
     var stateFullScreen = MutableLiveData<Boolean>()
     var closedRangeCalendar = MutableLiveData<Event<ClosedRange<LocalDate>>>()
 
-    //доступные интервалы архива для выбранной камеры
+    // доступные интервалы архива для выбранной камеры
     var availableRanges = mutableListOf<AvailableRange>()
 
     fun fullScreen(flag: Boolean) {
@@ -78,27 +76,30 @@ class CCTVViewModel(
                 val url = it.url + "/recording_status.json?from=1525186456&token=" + it.token
                 val loadPeriods = cctvInteractor.loadPeriods(url)?.first()?.ranges ?: emptyList()
 
-                //для теста
+                // для теста
                 /*val loadPeriods = mutableListOf<RangeObject.Range>()
                 loadPeriods.add(RangeObject.Range(10, 1610521200))
                 loadPeriods.add(RangeObject.Range(600, 1610522400))
                 loadPeriods.add(RangeObject.Range(4200, 1610524500))
                 loadPeriods.add(RangeObject.Range(2700, 1610538300))*/
 
-                //заполняем периоды архива, которые есть на сервере
+                // заполняем периоды архива, которые есть на сервере
                 availableRanges.clear()
-                loadPeriods.forEach {period ->
+                loadPeriods.forEach { period ->
 
-                    //для теста
+                    // для теста
                     /*if (availableRanges.size == 0) {
                         period.from = 1602475470
                     }
                     period.from -= 3196800*/
-                    
-                    availableRanges.add(AvailableRange(period.duration, period.from,
-                        Instant.ofEpochSecond(period.from.toLong()).atZone(ZoneId.systemDefault()).toLocalDateTime(),
-                        Instant.ofEpochSecond(period.from.toLong() + period.duration.toLong()).atZone(ZoneId.systemDefault()).toLocalDateTime()
-                    ))
+
+                    availableRanges.add(
+                        AvailableRange(
+                            period.duration, period.from,
+                            Instant.ofEpochSecond(period.from.toLong()).atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                            Instant.ofEpochSecond(period.from.toLong() + period.duration.toLong()).atZone(ZoneId.systemDefault()).toLocalDateTime()
+                        )
+                    )
                 }
 
                 val maxFrom = loadPeriods.maxByOrNull { (it.from + it.duration) } ?: RangeObject.Range(0, 0)

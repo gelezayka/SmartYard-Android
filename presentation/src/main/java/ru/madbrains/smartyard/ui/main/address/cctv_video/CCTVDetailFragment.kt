@@ -66,7 +66,8 @@ class CCTVDetailFragment : Fragment() {
         Timber.d("debug_dmm onViewCreated")
     }
 
-    private fun setupUi(fm: FragmentManager
+    private fun setupUi(
+        fm: FragmentManager
     ) {
         binding.contentWrap.clipToOutline = true
         binding.ivBack.setOnClickListener {

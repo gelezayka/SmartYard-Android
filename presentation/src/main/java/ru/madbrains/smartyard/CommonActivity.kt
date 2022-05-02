@@ -36,7 +36,7 @@ abstract class CommonActivity : AppCompatActivity() {
                     else -> {
                         showStandardAlert(
                             this,
-                             getString(R.string.error), //error.cause.message
+                            getString(R.string.error), // error.cause.message
                             error.errorData?.message ?: this.getString(error.status.messageId)
                         )
                     }

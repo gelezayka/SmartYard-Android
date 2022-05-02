@@ -11,7 +11,9 @@ import org.linphone.core.tools.Log
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
+import java.util.Locale
 
 class LinphoneService : Service() {
     private var mCore: Core? = null
@@ -33,7 +35,7 @@ class LinphoneService : Service() {
             Log.e(ioe)
         }
 
-        //Factory.instance().setDebugMode(true, "__Q__")
+        // Factory.instance().setDebugMode(true, "__Q__")
 
         val core = Factory.instance().createCore("$basePath/$FILE", "$basePath/$FOLDER", this)
         mCore = core
@@ -63,12 +65,12 @@ class LinphoneService : Service() {
         Timber.d("debug_dmm Linphone starting... >>>")
 
         mCore?.let { core ->
-            //ICE/STUN/TURN
+            // ICE/STUN/TURN
             var nat = core.natPolicy
             if (nat == null) {
                 nat = core.createNatPolicy()
             }
-            
+
             var stun = intent?.getStringExtra(FirebaseMessagingService.CALL_STUN) ?: ""
             val turnTransport = intent?.getStringExtra(FirebaseMessagingService.CALL_STUN_TRANSPORT) ?: "udp"
             val turnUsername = intent?.getStringExtra(FirebaseMessagingService.CALL_TURN_USERNAME) ?: ""

@@ -193,7 +193,7 @@ class AddressSettingsFragment : Fragment() {
                 binding.vUseFRS.isVisible = false
             } else {
                 if (!contractOwner) {
-                    //не владелец квартиры, запрещаем переключатель распознавания лиц и делаем настройку попупрозрачной
+                    // не владелец квартиры, запрещаем переключатель распознавания лиц и делаем настройку попупрозрачной
                     binding.tvUseFRS.alpha = FRS_DISABLED_ALPHA
                     binding.ivUseFRSBeta.alpha = FRS_DISABLED_ALPHA
                     binding.switchUseFRS.alpha = FRS_DISABLED_ALPHA

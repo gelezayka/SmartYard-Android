@@ -86,14 +86,14 @@ class PayBottomSheetDialogViewModel(
             val rubInKopecks = a.toInt().toString()
             val payPrepare = payInteractor.payPrepare(clientId, rubInKopecks)
             val returnUrl = sberUrl + "?clientId=" + clientId.toInt() + "&orderNumber=" + payPrepare.data
-            val failUrl = sberUrl  + "?clientId=" + clientId.toInt()
+            val failUrl = sberUrl + "?clientId=" + clientId.toInt()
             Timber.d("__sber returnUrl = $returnUrl   failUrl = $failUrl")
             val sberRegisterDo = payInteractor.sberRegisterDo(
                 DataModule.sberApiUserName,
                 DataModule.sberApiPassword,
                 language,
                 sberUrl + "?clientId=" + clientId.toInt() + "&orderNumber=" + payPrepare.data,
-                sberUrl  + "?clientId=" + clientId.toInt(),
+                sberUrl + "?clientId=" + clientId.toInt(),
                 payPrepare.data,
                 a.toInt()
             )

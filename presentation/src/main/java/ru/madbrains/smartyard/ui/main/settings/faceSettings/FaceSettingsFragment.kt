@@ -29,8 +29,11 @@ class FaceSettingsFragment : Fragment() {
     private var flatId = 0
     private var address = ""
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentFaceSettingsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -64,7 +67,8 @@ class FaceSettingsFragment : Fragment() {
 
             (requireActivity() as MainActivity).binding.bottomNav.selectedItemId = R.id.address
             val host = (requireActivity() as? MainActivity)?.supportFragmentManager?.findFragmentByTag(
-                getFragmentTag(0)) as NavHostFragment?
+                getFragmentTag(0)
+            ) as NavHostFragment?
             val navOptions = NavOptions.Builder()
                 .setLaunchSingleTop(true)
                 .setPopUpTo(R.id.addressFragment, false)
@@ -81,7 +85,8 @@ class FaceSettingsFragment : Fragment() {
                 layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                 it?.let { faces ->
-                    adapter = FaceSettingsAdapter(faces,
+                    adapter = FaceSettingsAdapter(
+                        faces,
                         { position ->
                             val dialogViewPhoto =
                                 DialogViewPhotoFragment(faces[position].faceImage)

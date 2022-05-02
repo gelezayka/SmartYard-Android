@@ -47,7 +47,7 @@ class AddressViewModel(
         }
     }
 
-    //учитывать ли кэш при следующем запросе списка адресов
+    // учитывать ли кэш при следующем запросе списка адресов
     var nextListNoCache = true
 
     init {
@@ -62,12 +62,12 @@ class AddressViewModel(
         res?.data?.forEach { settingItem ->
             flatToNumber[settingItem.flatId] = settingItem.flatNumber
             if (settingItem.hasPlog == "t") {
-                (houseFlats.getOrPut(settingItem.houseId) {mutableSetOf()}).add(settingItem.flatId)
+                (houseFlats.getOrPut(settingItem.houseId) { mutableSetOf() }).add(settingItem.flatId)
             }
         }
 
-        val houseIdFlats = hashMapOf<Int, List<Flat>>()  // идентификатор дома с квартирами пользователя
-        houseFlats.keys.forEach {houseId ->
+        val houseIdFlats = hashMapOf<Int, List<Flat>>() // идентификатор дома с квартирами пользователя
+        houseFlats.keys.forEach { houseId ->
             houseIdFlats[houseId] = houseFlats[houseId]!!.map { flatId ->
                 val resIntercom = addressInteractor.getIntercom(flatId)
                 val frsEnabled = (resIntercom.data.frsDisabled == false)
@@ -174,11 +174,13 @@ class AddressViewModel(
                             hasYards
                         )
                     }.toMutableList()
+                    )
+                list.sortWith(
+                    compareBy(
+                        { !(it as ParentModel).hasYards },
+                        { (it as ParentModel).addressTitle }
+                    )
                 )
-                list.sortWith(compareBy(
-                    {!(it as ParentModel).hasYards},
-                    {(it as ParentModel).addressTitle}
-                ))
                 val listConnect = issueInteractor.listConnectIssue()?.data
                 _dataList.value = list.plus(
                     listConnect?.map {

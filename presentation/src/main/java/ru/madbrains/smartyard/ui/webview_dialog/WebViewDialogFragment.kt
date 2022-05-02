@@ -6,7 +6,11 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.text.Html
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import ru.madbrains.smartyard.databinding.FragmentWebViewDialogBinding
 
@@ -15,7 +19,8 @@ class WebViewDialogFragment(private val resId: Int) : DialogFragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWebViewDialogBinding.inflate(inflater, container, false)
@@ -49,5 +54,4 @@ class WebViewDialogFragment(private val resId: Int) : DialogFragment() {
             WindowManager.LayoutParams.MATCH_PARENT
         )
     }
-
 }

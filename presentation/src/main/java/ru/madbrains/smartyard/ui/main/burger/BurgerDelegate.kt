@@ -6,9 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
 import ru.madbrains.smartyard.databinding.ItemBurgerBinding
-import timber.log.Timber
 
-class BurgerDelegate: AdapterDelegate<List<BurgerModel>>() {
+class BurgerDelegate : AdapterDelegate<List<BurgerModel>>() {
     override fun isForViewType(items: List<BurgerModel>, position: Int): Boolean {
         return true
     }

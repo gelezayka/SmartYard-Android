@@ -67,7 +67,7 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
         // Check if message contains a notification payload.
         remoteMessage.notification?.let {
-            Timber.tag(TAG).d( "debug_dmm Message Notification Body: ${it.body}")
+            Timber.tag(TAG).d("debug_dmm Message Notification Body: ${it.body}")
         }
 
         if (remoteMessage.data.isNotEmpty()) {
@@ -183,9 +183,7 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
                                 badge ?: 0,
                                 true
                             )
-                        }  else {
-                            
-                        }
+                        } else { }
                     }
 
                     else -> {
@@ -317,7 +315,7 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
                             intent.putExtra(CALL_TURN_PASSWORD, fcmCallData.pass)
                         }
 
-                        //для теста
+                        // для теста
                         /*intent.putExtra(CALL_STUN, "turn:37.235.209.140:3478")  // tls 5349  // udp/tcp 3478
                         intent.putExtra(CALL_STUN_TRANSPORT, "udp")*/
                     }

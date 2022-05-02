@@ -19,7 +19,7 @@ import ru.madbrains.smartyard.ui.updateAllWidget
 class WidgetActivity : AppCompatActivity() {
     private val databaseInteractor: DatabaseInteractor by inject()
     private val authInteractor: AuthInteractor by inject()
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

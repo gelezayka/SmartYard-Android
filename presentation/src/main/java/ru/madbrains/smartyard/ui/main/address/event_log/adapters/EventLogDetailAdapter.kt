@@ -95,7 +95,7 @@ class EventLogDetailAdapter(
 
             val (day, index) = getPlog(position)
             if (day != null && index != null) {
-                eventsByDays[day]?.get(index)?.let {eventItem ->
+                eventsByDays[day]?.get(index)?.let { eventItem ->
                     tvEventName.text = eventItem.event
                     tvEventAddress.text = eventItem.address
                     tvEventDate.text =
@@ -122,14 +122,13 @@ class EventLogDetailAdapter(
                             .asBitmap()
                             .load(eventItem.preview)
                             .transform(RoundedCorners(tvEventImage.resources.getDimensionPixelSize(R.dimen.event_log_detail_corner)))
-                            .into(object : CustomTarget<Bitmap>(){
+                            .into(object : CustomTarget<Bitmap>() {
                                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                                     tvEventImage.setImageBitmap(resource)
                                 }
 
                                 override fun onLoadCleared(placeholder: Drawable?) {
                                 }
-
                             })
                     } else {
                         tvEventImage.setImageResource(android.R.color.transparent)
@@ -141,20 +140,23 @@ class EventLogDetailAdapter(
                     bELDFriend.setOnClickListener(null)
 
                     if (eventItem.frsEnabled) {
-                        eventItem.detailX?.face?.let {face ->
-                            tvEventImage.setFaceRect(face.left, face.top, face.width, face.height,
-                                eventItem.eventType == Plog.EVENT_OPEN_BY_FACE)
+                        eventItem.detailX?.face?.let { face ->
+                            tvEventImage.setFaceRect(
+                                face.left,
+                                face.top,
+                                face.width,
+                                face.height,
+                                eventItem.eventType == Plog.EVENT_OPEN_BY_FACE
+                            )
                         }
 
-                        if (eventItem.detailX?.flags?.contains(Plog.FLAG_CAN_DISLIKE) == true
-                            && eventItem.eventType == Plog.EVENT_OPEN_BY_FACE) {
+                        if (eventItem.detailX?.flags?.contains(Plog.FLAG_CAN_DISLIKE) == true && eventItem.eventType == Plog.EVENT_OPEN_BY_FACE) {
                             clELDFoe.isVisible = true
                             bELDFoe.setOnClickListener {
                                 friendOrFoeCallback(Triple(position, day, index))
                             }
                         } else {
-                            if (eventItem.detailX?.flags?.contains(Plog.FLAG_CAN_LIKE) == true
-                                && eventItem.eventType != Plog.EVENT_OPEN_BY_FACE) {
+                            if (eventItem.detailX?.flags?.contains(Plog.FLAG_CAN_LIKE) == true && eventItem.eventType != Plog.EVENT_OPEN_BY_FACE) {
                                 clELDFriend.isVisible = true
                                 bELDFriend.setOnClickListener {
                                     friendOrFoeCallback(Triple(position, day, index))
@@ -162,7 +164,6 @@ class EventLogDetailAdapter(
                             }
                         }
                     }
-
                 }
             }
 

@@ -119,7 +119,7 @@ class MainActivityViewModel(
     }
 
     fun sberCompletePayment(orderNumber: String) {
-        viewModelScope.withProgress({false}, null) {
+        viewModelScope.withProgress({ false }, null) {
             val orderId = DataModule.extractOrderId(orderNumber)
             if (orderId.isNotEmpty()) {
                 payInteractor.payProcess(orderNumber, orderId)
@@ -127,32 +127,35 @@ class MainActivityViewModel(
         }
     }
 
-    //Проверям статусы оплат. Если оплата успешна завершена, то дёргаем api метод.
+    // Проверям статусы оплат. Если оплата успешна завершена, то дёргаем api метод.
     fun sberCheckPayments() {
-        viewModelScope.withProgress({false}, null) {
+        viewModelScope.withProgress({ false }, null) {
             var orders = hashMapOf<String, String>()
             synchronized(DataModule.orderNumberToId) {
                 orders = HashMap(DataModule.orderNumberToId)
             }
             val removeOrders = mutableListOf<String>()
             orders.forEach {
-                val res = payInteractor.sberOrderStatusDo(DataModule.sberApiUserName,
-                    DataModule.sberApiPassword, it.key)
+                val res = payInteractor.sberOrderStatusDo(
+                    DataModule.sberApiUserName,
+                    DataModule.sberApiPassword,
+                    it.key
+                )
                 res?.actionCode?.let { actionCode ->
                     if (actionCode == 0) {
-                        //оплата успешно выполнена, дёргаем api метод
+                        // оплата успешно выполнена, дёргаем api метод
                         payInteractor.payProcess(it.key, it.value)
 
-                        //добавляем идентификатор платежа в список для удаления
+                        // добавляем идентификатор платежа в список для удаления
                         removeOrders.add(it.key)
                     } else if (actionCode < 0) {
-                        //ошибка при оплате, добавляем в список для удаления
+                        // ошибка при оплате, добавляем в список для удаления
                         removeOrders.add(it.key)
                     }
                 }
             }
 
-            //удаляем обработанные платежи
+            // удаляем обработанные платежи
             Timber.d("__sber payments to remove: $removeOrders")
             synchronized(DataModule.orderNumberToId) {
                 removeOrders.forEach {

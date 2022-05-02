@@ -3,7 +3,11 @@ package ru.madbrains.smartyard.ui.main.address.event_log
 import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.GestureDetector
 import androidx.fragment.app.Fragment
 import android.widget.ImageView
 import android.widget.ScrollView
@@ -48,8 +52,11 @@ class EventLogDetailFragment : Fragment() {
     private var videoUrl = ""
     private var savedPosition = -1
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentEventLogDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -71,7 +78,7 @@ class EventLogDetailFragment : Fragment() {
                 .setTrackSelector(trackSelector)
                 .build()
             mPlayer?.playWhenReady = true
-            mPlayer?.addListener(object : Player.EventListener{
+            mPlayer?.addListener(object : Player.EventListener {
                 override fun onPlaybackStateChanged(state: Int) {
                     if (state == Player.STATE_READY) {
                         activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -92,7 +99,7 @@ class EventLogDetailFragment : Fragment() {
                     mPlayerView?.alpha = 1.0f
                 }
 
-                //этот метод нужен для установки нужной высоты вьюшки с видео
+                // этот метод нужен для установки нужной высоты вьюшки с видео
                 override fun onVideoSizeChanged(
                     width: Int,
                     height: Int,
@@ -133,7 +140,7 @@ class EventLogDetailFragment : Fragment() {
         (binding.rvEventLogDetail.adapter as? EventLogDetailAdapter)?.let { adapter ->
             val (day, index) = adapter.getPlog(position)
             if (day != null && index != null) {
-                adapter.eventsByDays[day]?.get(index)?.let {eventItem ->
+                adapter.eventsByDays[day]?.get(index)?.let { eventItem ->
                     val timestampStart = DateTimeUtils.toSqlTimestamp(eventItem.date.minusSeconds(EventLogViewModel.EVENT_VIDEO_BACK_SECONDS)).time / 1000
                     val duration = EventLogViewModel.EVENT_VIDEO_DURATION_SECONDS
                     mViewModel.camMapData[eventItem.objectId]?.let { data ->
@@ -178,12 +185,14 @@ class EventLogDetailFragment : Fragment() {
     private fun initRecycler() {
         binding.rvEventLogDetail.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            adapter = EventLogDetailAdapter(listOf(), hashMapOf(),
+            adapter = EventLogDetailAdapter(
+                listOf(),
+                hashMapOf(),
                 {
                     mViewModel.eventsByDaysFilter[it.second]?.get(it.third)?.let { plog ->
                         plog.detailX?.flags?.let { flags ->
                             if (flags.contains(Plog.FLAG_CAN_DISLIKE)) {
-                                //пользователь дизлайкнул
+                                // пользователь дизлайкнул
                                 val faceId = plog.detailX?.faceId?.toInt() ?: 0
                                 val photoUrl = mViewModel.faceIdToUrl[faceId] ?: plog.preview
                                 val dialogRemovePhoto = DialogRemovePhotoFragment(photoUrl ?: "") {
@@ -202,7 +211,7 @@ class EventLogDetailFragment : Fragment() {
                                 dialogRemovePhoto.show(requireActivity().supportFragmentManager, "")
                             } else {
                                 if (flags.contains(Plog.FLAG_CAN_LIKE)) {
-                                    //пользователь лайкнул
+                                    // пользователь лайкнул
                                     val dialogAddPhoto = DialogAddPhotoFragment(
                                         plog.preview ?: "",
                                         plog.detailX?.face?.left ?: -1,
@@ -237,10 +246,12 @@ class EventLogDetailFragment : Fragment() {
         }
 
         snapHelper = PagerSnapHelper()
-        binding.rvEventLogDetail.attachSnapHelperWithListener(snapHelper!!, SnapOnScrollListener.ScrollBehavior.NOTIFY_ON_SCROLL_IDLE,
+        binding.rvEventLogDetail.attachSnapHelperWithListener(
+            snapHelper!!,
+            SnapOnScrollListener.ScrollBehavior.NOTIFY_ON_SCROLL_IDLE,
             object : OnSnapPositionChangeListener {
                 override fun onSnapPositionChanged(prevPosition: Int, newPosition: Int) {
-                    //Timber.d("__Q__ snap position changed: prev = $prevPosition;  new = $newPosition")
+                    // Timber.d("__Q__ snap position changed: prev = $prevPosition;  new = $newPosition")
                     if (prevPosition != RecyclerView.NO_POSITION) {
                         val pvELDVideo: PlayerView? = binding.rvEventLogDetail.findViewHolderForAdapterPosition(prevPosition)?.itemView?.findViewById(R.id.pvELDVideo)
                         pvELDVideo?.alpha = 0.0f
@@ -252,58 +263,63 @@ class EventLogDetailFragment : Fragment() {
                     mPlayerView = pvELDVideo
 
                     val svELD: ScrollView? = binding.rvEventLogDetail.findViewHolderForAdapterPosition(newPosition)?.itemView?.findViewById(R.id.svELD)
-                    val q = GestureDetector(requireContext(), MyGestureDetector(
-                        {
-                            if (mPlayer?.playbackState == Player.STATE_READY) {
-                                if (mPlayer?.isPlaying == true) {
-                                    mPlayer?.pause()
-                                    Toast.makeText(requireContext(), EventLogViewModel.PAUSE, Toast.LENGTH_LONG).show()
-                                } else {
-                                    mPlayerView?.alpha = 1.0f
-                                    mPlayer?.play()
-                                    Toast.makeText(requireContext(), EventLogViewModel.PLAYING, Toast.LENGTH_LONG).show()
-                                }
-                            }
-                        }, { x_pos ->  //двойной тап делает перемотку вперед или назад в зависимости от места двойного тапа: слева - назад, справа - вперед
-                            if (mPlayer?.playbackState == Player.STATE_READY) {
-                                if (x_pos != null && svELD != null && mPlayer != null) {
-                                    var currentPosition = mPlayer?.currentPosition ?: 0
-                                    val lastPosition = (mPlayer?.duration ?: 0) - 1
-                                    var seekStep = EventLogViewModel.SEEK_STEP
-                                    if (x_pos.toInt() < svELD.width / 2) {
-                                        seekStep = -seekStep
-                                    }
-                                    currentPosition += seekStep
-                                    if (currentPosition < 0)
-                                        currentPosition = 0
-                                    if (currentPosition > lastPosition)
-                                        currentPosition = lastPosition 
-                                    mPlayer?.seekTo(currentPosition)
-
-                                    val ivAnimation: ImageView? = if (seekStep < 0) {
-                                        binding.rvEventLogDetail.findViewHolderForAdapterPosition(newPosition)?.itemView?.findViewById(R.id.ivBackwardELD)
+                    val q = GestureDetector(
+                        requireContext(),
+                        MyGestureDetector(
+                            {
+                                if (mPlayer?.playbackState == Player.STATE_READY) {
+                                    if (mPlayer?.isPlaying == true) {
+                                        mPlayer?.pause()
+                                        Toast.makeText(requireContext(), EventLogViewModel.PAUSE, Toast.LENGTH_LONG).show()
                                     } else {
-                                        binding.rvEventLogDetail.findViewHolderForAdapterPosition(newPosition)?.itemView?.findViewById(R.id.ivForwardELD)
+                                        mPlayerView?.alpha = 1.0f
+                                        mPlayer?.play()
+                                        Toast.makeText(requireContext(), EventLogViewModel.PLAYING, Toast.LENGTH_LONG).show()
                                     }
+                                }
+                            },
+                            { x_pos -> // двойной тап делает перемотку вперед или назад в зависимости от места двойного тапа: слева - назад, справа - вперед
+                                if (mPlayer?.playbackState == Player.STATE_READY) {
+                                    if (x_pos != null && svELD != null && mPlayer != null) {
+                                        var currentPosition = mPlayer?.currentPosition ?: 0
+                                        val lastPosition = (mPlayer?.duration ?: 0) - 1
+                                        var seekStep = EventLogViewModel.SEEK_STEP
+                                        if (x_pos.toInt() < svELD.width / 2) {
+                                            seekStep = -seekStep
+                                        }
+                                        currentPosition += seekStep
+                                        if (currentPosition < 0)
+                                            currentPosition = 0
+                                        if (currentPosition > lastPosition)
+                                            currentPosition = lastPosition
+                                        mPlayer?.seekTo(currentPosition)
 
-                                    //делаем анимацию значка перемотки
-                                    animationFadeInFadeOut(ivAnimation)
+                                        val ivAnimation: ImageView? = if (seekStep < 0) {
+                                            binding.rvEventLogDetail.findViewHolderForAdapterPosition(newPosition)?.itemView?.findViewById(R.id.ivBackwardELD)
+                                        } else {
+                                            binding.rvEventLogDetail.findViewHolderForAdapterPosition(newPosition)?.itemView?.findViewById(R.id.ivForwardELD)
+                                        }
+
+                                        // делаем анимацию значка перемотки
+                                        animationFadeInFadeOut(ivAnimation)
+                                    }
+                                }
+                            },
+                            {
+                                if (mPlayer?.playbackState == Player.STATE_READY) {
+                                    if (mPlayerView?.alpha == 0.0f) {
+                                        mPlayerView?.alpha = 1.0f
+                                        mPlayer?.play()
+                                        Toast.makeText(requireContext(), EventLogViewModel.PLAYING, Toast.LENGTH_LONG).show()
+                                    } else {
+                                        mPlayerView?.alpha = 0.0f
+                                        mPlayer?.pause()
+                                        Toast.makeText(requireContext(), EventLogViewModel.SCREENSHOT, Toast.LENGTH_LONG).show()
+                                    }
                                 }
                             }
-                        }, {
-                            if (mPlayer?.playbackState == Player.STATE_READY) {
-                                if (mPlayerView?.alpha == 0.0f) {
-                                    mPlayerView?.alpha = 1.0f
-                                    mPlayer?.play()
-                                    Toast.makeText(requireContext(), EventLogViewModel.PLAYING, Toast.LENGTH_LONG).show()
-                                } else {
-                                    mPlayerView?.alpha = 0.0f
-                                    mPlayer?.pause()
-                                    Toast.makeText(requireContext(), EventLogViewModel.SCREENSHOT, Toast.LENGTH_LONG).show()
-                                }
-                            }
-                        }))
-
+                        )
+                    )
 
                     svELD?.setOnTouchListener { _, event ->
                         q.onTouchEvent(event)
@@ -315,22 +331,21 @@ class EventLogDetailFragment : Fragment() {
                     playVideo(newPosition)
                     savedPosition = newPosition
                 }
-            })
+            }
+        )
 
-        binding.rvEventLogDetail.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+        binding.rvEventLogDetail.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
                 val llm = binding.rvEventLogDetail.layoutManager as LinearLayoutManager
                 val itemCount = binding.rvEventLogDetail.adapter?.itemCount ?: 0
                 val itemPosition = llm.findLastCompletelyVisibleItemPosition()
-                if (dx > 0 && itemPosition  == itemCount - 1
-                    && (mViewModel.lastLoadedDayFilterIndex.value ?: 0) < mViewModel.eventDaysFilter.size - 1) {
-                    //Timber.d("__Q__ call getMoreEvents()")
+                if (dx > 0 && itemPosition == itemCount - 1 && (mViewModel.lastLoadedDayFilterIndex.value ?: 0) < mViewModel.eventDaysFilter.size - 1) {
+                    // Timber.d("__Q__ call getMoreEvents()")
                     mViewModel.getMoreEvents()
                 }
-                if (itemPosition == llm.findFirstCompletelyVisibleItemPosition()
-                    && itemPosition != RecyclerView.NO_POSITION) {
+                if (itemPosition == llm.findFirstCompletelyVisibleItemPosition() && itemPosition != RecyclerView.NO_POSITION) {
                     mViewModel.currentEventDayFilter = (binding.rvEventLogDetail.adapter as EventLogDetailAdapter).getPlog(itemPosition).first
                 }
 

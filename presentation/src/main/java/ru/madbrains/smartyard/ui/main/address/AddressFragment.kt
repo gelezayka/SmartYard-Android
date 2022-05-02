@@ -167,7 +167,7 @@ class AddressFragment : Fragment(), GuestAccessDialogFragment.OnGuestAccessListe
                     mEventLog.lastLoadedDayFilterIndex.value = -1
                     mEventLog.currentEventItem = null
                     mEventLog.getAllFaces()
-                    
+
                     this.findNavController().navigate(R.id.action_addressFragment_to_eventLogFragment)
                 }
             )
@@ -187,8 +187,7 @@ class AddressFragment : Fragment(), GuestAccessDialogFragment.OnGuestAccessListe
                     binding.floatingActionButton.show()
                 }
 
-                if (!recyclerView.canScrollVertically(-1)
-                    && binding.floatingActionButton.visibility != View.VISIBLE) {
+                if (!recyclerView.canScrollVertically(-1) && binding.floatingActionButton.visibility != View.VISIBLE) {
                     binding.floatingActionButton.show()
                 }
             }

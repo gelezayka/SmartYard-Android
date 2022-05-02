@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -58,7 +64,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
     private val binding get() = _binding!!
 
     private var mPlayer: SimpleExoPlayer? = null
-    private var forceVideoTrack = true  //принудительное использование треков с высоким разрешением
+    private var forceVideoTrack = true // принудительное использование треков с высоким разрешением
     private lateinit var chosenDate: LocalDate
 
     private val mDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yy")
@@ -69,21 +75,21 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
     private var mExoPlayerView: PlayerView? = null
     private var mExoPlayerFullscreen = false
 
-    //для полноэкранного режима
+    // для полноэкранного режима
     private var lpContentWrap: ViewGroup.LayoutParams? = null
     private var lpVideoWrap: ViewGroup.LayoutParams? = null
     private var lpRangeSlider: ViewGroup.LayoutParams? = null
     private var playerResizeMode: Int = 0
     private var areVideoControllersShown = false
-    private val hideVideoControllersHandler = Handler()
+    private val hideVideoControllersHandler = Handler(Looper.getMainLooper())
     private val hideVideoControllersRunnable = Runnable {
         hideVideoControllers()
     }
 
-    //список временных интервалов архива, которые есть на сервере, внутри выбранного пользователем интервала просмотра архива
+    // список временных интервалов архива, которые есть на сервере, внутри выбранного пользователем интервала просмотра архива
     private var archiveRanges = mutableListOf<TimeInterval>()
 
-    //индекс проигрываемого в данный момент архивного интервала
+    // индекс проигрываемого в данный момент архивного интервала
     private var currentArchiveRangeIndex = -1
 
     private fun generateArchiveRanges() {
@@ -93,8 +99,8 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
             val rangeFrom = this.from
             val rangeTo = this.to
 
-            //ищем пересечения с интервалами из архива
-            mCCTVViewModel.availableRanges.forEach {range ->
+            // ищем пересечения с интервалами из архива
+            mCCTVViewModel.availableRanges.forEach { range ->
                 if ((rangeFrom < range.endDate) && (range.startDate < rangeTo)) {
                     val intersectionLeft = if (rangeFrom > range.startDate) rangeFrom else range.startDate
                     val intersectionRight = if (rangeTo < range.endDate) rangeTo else range.endDate
@@ -105,7 +111,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
 
         mViewModel.setAvailableRanges(mCCTVViewModel.availableRanges)
         binding.rangePlayer.setAvailableIntervals(mCurrentPlaybackData?.interval, archiveRanges)
-        //rangePlayer.setBarHeight(2.dpToPx())
+        // rangePlayer.setBarHeight(2.dpToPx())
     }
 
     private fun generateTrimmerRanges(interval: TimeInterval) {
@@ -113,8 +119,8 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
         val rangeFrom = interval.from
         val rangeTo = interval.to
 
-        //ищем пересечения с интервалами из архива
-        mCCTVViewModel.availableRanges.forEach {range ->
+        // ищем пересечения с интервалами из архива
+        mCCTVViewModel.availableRanges.forEach { range ->
             if ((rangeFrom < range.endDate) && (range.startDate < rangeTo)) {
                 val intersectionLeft = if (rangeFrom > range.startDate) rangeFrom else range.startDate
                 val intersectionRight = if (rangeTo < range.endDate) rangeTo else range.endDate
@@ -125,7 +131,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
         binding.rangeTrimmer.setAvailableIntervals(interval, trimmerRanges)
     }
 
-    //позиционирование в указанную временную точку в миллисекундах внутри интервала
+    // позиционирование в указанную временную точку в миллисекундах внутри интервала
     private fun playerSeekTo(ms: Long) {
         if (archiveRanges.size == 0) {
             return
@@ -137,9 +143,9 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
 
         var seekToTime = archiveRanges.first().from.plusSeconds(ms / 1000)
 
-        //ищем индекс архивного интервала
+        // ищем индекс архивного интервала
         var foundIndex = -1
-        run loop@ {
+        run loop@{
             archiveRanges.forEachIndexed { index, timeInterval ->
                 if (timeInterval.from <= seekToTime && seekToTime < timeInterval.to) {
                     foundIndex = index
@@ -171,7 +177,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
         binding.rangePlayer.slider.setSeekFromPlayer(playerCurrentPosition())
     }
 
-    //текущая позиция видео в миллисекундах внутри интервала
+    // текущая позиция видео в миллисекундах внутри интервала
     private fun playerCurrentPosition(): Long {
         if (archiveRanges.size == 0) {
             return 0L
@@ -188,7 +194,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
         return archiveRanges[currentArchiveRangeIndex].from.timeInMs() - archiveRanges.first().from.timeInMs() + (mPlayer?.currentPosition ?: 0)
     }
 
-    //общая длительность интервала
+    // общая длительность интервала
     private fun playerDuration(): Long {
         return (mCurrentPlaybackData?.interval?.durationInMs ?: 0)
     }
@@ -198,8 +204,8 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
         private const val MIN_SPEED_DOWN_VALUE = 0.25
         private const val prepareVideoWait = 1L
 
-        const val INACTIVE_PERIOD_MS = 5_000L  //период бездествия пользователя в миллисекундах, спустя который скрываются видео контроллеры
-        const val RESOLUTION_TOLERANCE = 1.08  // коэффициент допуска видео разрешения
+        const val INACTIVE_PERIOD_MS = 5_000L // период бездествия пользователя в миллисекундах, спустя который скрываются видео контроллеры
+        const val RESOLUTION_TOLERANCE = 1.08 // коэффициент допуска видео разрешения
     }
 
     override fun onUserInteraction() {
@@ -246,7 +252,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
         }
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         (activity as? MainActivity)?.setUserInteractionListener(null)
-        
+
         super.onDestroyView()
     }
 
@@ -278,7 +284,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
         (binding.panelTrim.parent as ViewGroup).removeView(binding.panelTrim)
         (binding.btnMainAction.parent as ViewGroup).removeView(binding.btnMainAction)
 
-        //скрываем ненужные элементы
+        // скрываем ненужные элементы
         binding.imageView.visibility = View.INVISIBLE
         binding.ivBack.visibility = View.INVISIBLE
         binding.tvTitle.visibility = View.INVISIBLE
@@ -296,7 +302,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
         binding.mPlayerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
         binding.mFullScreens.background = ContextCompat.getDrawable(requireContext(), R.drawable.ic_cctv_exit_fullscreen)
 
-        //layouts в полноэкранном режиме
+        // layouts в полноэкранном режиме
         val lp2 = binding.videoWrap.layoutParams as ConstraintLayout.LayoutParams
         lp2.width = ConstraintLayout.LayoutParams.MATCH_PARENT
         lp2.height = ConstraintLayout.LayoutParams.MATCH_PARENT
@@ -343,7 +349,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
             binding.llControls.addView(binding.panelTrim)
             binding.llControls.addView(binding.btnMainAction)
 
-            //показываем скрытые элементы
+            // показываем скрытые элементы
             binding.imageView.visibility = View.VISIBLE
             binding.ivBack.visibility = View.VISIBLE
             binding.tvTitle.visibility = View.VISIBLE
@@ -359,7 +365,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
             binding.mPlayerView.resizeMode = playerResizeMode
             binding.mFullScreens.background = ContextCompat.getDrawable(requireContext(), R.drawable.ic_cctv_enter_fullscreen)
 
-            //возвращаем дефолтные layouts
+            // возвращаем дефолтные layouts
             binding.videoWrap.layoutParams = lpVideoWrap
             binding.videoWrap.requestLayout()
 
@@ -648,10 +654,10 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
         Timber.d("debug_dmm create")
 
         val trackSelector = DefaultTrackSelector(requireContext())
-        val player  = SimpleExoPlayer.Builder(requireContext())
+        val player = SimpleExoPlayer.Builder(requireContext())
             .setTrackSelector(trackSelector)
             .build()
-        //player.addAnalyticsListener(EventLogger(trackSelector))
+        // player.addAnalyticsListener(EventLogger(trackSelector))
 
         videoView.player = player
         videoView.useController = false
@@ -670,7 +676,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
             }
         }
 
-        //двойной тап делает перемотку вперед или назад в зависимости от места двойного тапа: слева - назад, справа - вперед
+        // двойной тап делает перемотку вперед или назад в зависимости от места двойного тапа: слева - назад, справа - вперед
         binding.zlArchive.setDoubleTapConfirmedListener { x_pos ->
             if (mPlayer?.playbackState == Player.STATE_READY && x_pos != null) {
                 var currentPosition = mPlayer?.currentPosition ?: 0
@@ -692,11 +698,11 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
                     view?.findViewById(R.id.ivForwardArchive)
                 }
 
-                //делаем анимацию значка перемотки
+                // делаем анимацию значка перемотки
                 animationFadeInFadeOut(ivAnimation)
             }
         }
-        
+
         player.playWhenReady = false
         player.addListener(object : Player.EventListener {
             override fun onPlayerStateChanged(
@@ -754,8 +760,10 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
                 }
             }
 
-            override fun onTracksChanged(trackGroups: TrackGroupArray,
-                trackSelections: TrackSelectionArray) {
+            override fun onTracksChanged(
+                trackGroups: TrackGroupArray,
+                trackSelections: TrackSelectionArray
+            ) {
                 super.onTracksChanged(trackGroups, trackSelections)
 
                 if (!forceVideoTrack) {
@@ -766,7 +774,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
                 val maxSupportedWidth = (decoderInfo?.capabilities?.videoCapabilities?.supportedWidths?.upper ?: 0) * RESOLUTION_TOLERANCE
                 val maxSupportedHeight = (decoderInfo?.capabilities?.videoCapabilities?.supportedHeights?.upper ?: 0) * RESOLUTION_TOLERANCE
 
-                (player.trackSelector as? DefaultTrackSelector)?.let{ trackSelector ->
+                (player.trackSelector as? DefaultTrackSelector)?.let { trackSelector ->
                     trackSelector.currentMappedTrackInfo?.let { mappedTrackInfo ->
                         for (k in 0 until mappedTrackInfo.rendererCount) {
                             if (mappedTrackInfo.getRendererType(k) == C.TRACK_TYPE_VIDEO) {
@@ -776,8 +784,11 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
                                     for (j in 0 until rendererTrackGroups[i].length) {
                                         if (mappedTrackInfo.getTrackSupport(k, i, j) == C.FORMAT_HANDLED ||
                                             mappedTrackInfo.getTrackSupport(k, i, j) == C.FORMAT_EXCEEDS_CAPABILITIES &&
-                                                (maxSupportedWidth >= rendererTrackGroups[i].getFormat(j).width ||
-                                                maxSupportedHeight >= rendererTrackGroups[i].getFormat(j).height)) {
+                                            (
+                                                maxSupportedWidth >= rendererTrackGroups[i].getFormat(j).width ||
+                                                    maxSupportedHeight >= rendererTrackGroups[i].getFormat(j).height
+                                                )
+                                        ) {
                                             tracks.add(j)
                                         }
                                     }
@@ -792,7 +803,6 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
                     }
                 }
             }
-
         })
 
         return player
@@ -817,7 +827,7 @@ class CCTVTrimmerFragment : Fragment(), UserInteractionListener {
     ) {
         mCurrentPlaybackData = data
 
-        //создаем список проигрываемых интервалов
+        // создаем список проигрываемых интервалов
         generateArchiveRanges()
         currentArchiveRangeIndex = 0
 

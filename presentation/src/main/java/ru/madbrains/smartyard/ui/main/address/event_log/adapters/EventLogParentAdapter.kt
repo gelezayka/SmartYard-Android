@@ -11,7 +11,7 @@ import org.threeten.bp.format.DateTimeFormatter
 import ru.madbrains.domain.model.response.Plog
 import ru.madbrains.domain.utils.listenerGeneric
 import ru.madbrains.smartyard.R
-import java.util.*
+import java.util.Locale
 import kotlin.collections.HashMap
 
 class EventLogParentAdapter(
@@ -40,7 +40,8 @@ class EventLogParentAdapter(
 
         fun onBind(position: Int) {
             tvDay.text = eventsDay[position].format(DateTimeFormatter.ofPattern("eeee, d MMMM")).capitalize(
-                Locale.getDefault())
+                Locale.getDefault()
+            )
             val lm = LinearLayoutManager(itemView.context)
             rvChildren.layoutManager = lm
             val adapter = EventLogChildAdapter(eventsByDays[eventsDay[position]]?.toList() ?: listOf()) {

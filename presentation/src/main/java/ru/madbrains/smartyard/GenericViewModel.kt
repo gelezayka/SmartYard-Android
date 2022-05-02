@@ -5,8 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.crashlytics.internal.model.CrashlyticsReport
-import com.google.firebase.installations.Utils
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -94,14 +92,14 @@ open class GenericViewModel : ViewModel(), KoinComponent {
                 Timber.w("debug_dmm exception message: $exceptionMessage")
                 Timber.w("debug_dmm Device info: $deviceInfo")
                 FirebaseCrashlytics.getInstance().log("Date: $date; Phone: $phone; Device info: $deviceInfo; Message: $exceptionMessage\n")
-                task.exception?.let { exception->
+                task.exception?.let { exception ->
                     FirebaseCrashlytics.getInstance().recordException(exception)
                 }
                 return@addOnCompleteListener
             }
             mPreferenceStorage.fcmToken = task.result
 
-            //Timber.d("debug_dmm fcm token now: ${task.result?.token}")
+            // Timber.d("debug_dmm fcm token now: ${task.result?.token}")
 
             mPreferenceStorage.fcmToken?.let { token ->
                 Timber.d("debug_dmm token: $token")

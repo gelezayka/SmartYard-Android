@@ -28,7 +28,7 @@ class AppealForm @JvmOverloads constructor(
     private val mViewModel: AppealFormViewModel by inject()
 
     init {
-        _binding = FormAppealBinding.inflate(LayoutInflater.from(context) ,this, true)
+        _binding = FormAppealBinding.inflate(LayoutInflater.from(context), this, true)
     }
 
     private fun textChangeListener() {

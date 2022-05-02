@@ -78,7 +78,7 @@ class AutoFitPreviewBuilder private constructor(
 
         // Every time the provided texture view changes, recompute layout
         viewFinder.addOnLayoutChangeListener { view, left, top, right, bottom, _, _, _, _ ->
-            //val viewFinder = view as TextureView
+            // val viewFinder = view as TextureView
             val newViewFinderDimens = Size(right - left, bottom - top)
             val rotation = getDisplaySurfaceRotation(viewFinder.display)
             updateTransform(viewFinder, rotation, bufferDimens, newViewFinderDimens)

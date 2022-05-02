@@ -13,28 +13,31 @@ import ru.madbrains.smartyard.ui.main.MagicShapePath.CircleShape
 import ru.madbrains.smartyard.ui.main.MagicShapePath.PathDirection
 import ru.madbrains.smartyard.ui.main.MagicShapePath.ShiftMode
 
-class MorphBottomNavigationViewTopEdgeTreatment(private val bottomNavigationMenuView: BottomNavigationMenuView,
+class MorphBottomNavigationViewTopEdgeTreatment(
+    private val bottomNavigationMenuView: BottomNavigationMenuView,
     var morphItemRadius: Float,
     var morphVerticalOffset: Float,
-    var morphCornerRadius: Float) :
-    EdgeTreatment() {
+    var morphCornerRadius: Float
+) : EdgeTreatment() {
 
     private lateinit var easyShapePath: MagicShapePath
 
     var lastSelectedItem: Int = 0
     var selectedItem: Int = 0
 
-    override fun getEdgePath(length: Float,
+    override fun getEdgePath(
+        length: Float,
         center: Float,
         interpolation: Float,
-        shapePath: ShapePath) {
+        shapePath: ShapePath
+    ) {
         easyShapePath =
-          MagicShapePath.create(0f, 0f /*morphVerticalOffset*/, length, 0f /*morphVerticalOffset*/)
+            MagicShapePath.create(0f, 0f /*morphVerticalOffset*/, length, 0f /*morphVerticalOffset*/)
 
-        bottomNavigationMenuView.forEachIndexed {i, view ->
+        bottomNavigationMenuView.forEachIndexed { i, view ->
             var morphHeightOffset = 0f
 
-            //Draw only selected and last selected path
+            // Draw only selected and last selected path
             if (view.isVisible && (i == selectedItem || i == lastSelectedItem)) {
                 if (i == selectedItem) {
                     morphHeightOffset = interpolation * morphVerticalOffset
@@ -50,16 +53,20 @@ class MorphBottomNavigationViewTopEdgeTreatment(private val bottomNavigationMenu
 
                 val centerCircle = CircleShape(centerX, centerY, centerRadius, PathDirection.CLOCKWISE)
 
-                val leftCircle = CircleShape(centerX, /*morphVerticalOffset*/
+                val leftCircle = CircleShape(
+                    centerX, /*morphVerticalOffset*/
                     -borderRadius,
                     borderRadius,
-                    PathDirection.C_CLOCKWISE)
+                    PathDirection.C_CLOCKWISE
+                )
                 centerCircle.shiftOutside(leftCircle, ShiftMode.LEFT)
 
-                val rightCircle = CircleShape(centerX, /*morphVerticalOffset*/
+                val rightCircle = CircleShape(
+                    centerX, /*morphVerticalOffset*/
                     -borderRadius,
                     borderRadius,
-                    PathDirection.C_CLOCKWISE)
+                    PathDirection.C_CLOCKWISE
+                )
                 centerCircle.shiftOutside(rightCircle, ShiftMode.RIGHT)
 
                 easyShapePath.addCircles(leftCircle, centerCircle, rightCircle)
@@ -79,5 +86,4 @@ class MorphBottomNavigationViewTopEdgeTreatment(private val bottomNavigationMenu
             getGlobalVisibleRect(r)
             return r
         }
-
 }

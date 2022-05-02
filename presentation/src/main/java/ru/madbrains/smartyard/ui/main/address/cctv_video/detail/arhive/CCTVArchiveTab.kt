@@ -62,7 +62,7 @@ class CCTVArchiveTab : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View  {
+    ): View {
         _binding = FragmentCctvDetailArchiveBinding.inflate(inflater, container, false)
         return binding.root
     }

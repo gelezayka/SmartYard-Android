@@ -19,10 +19,10 @@ buildscript {
         firebaseMessagingVersion = '21.1.0'
         timberVersion = '4.7.1'
         navigationVersion = "2.2.2"
-        roomVersion = '2.4.1'
+        roomVersion = '2.4.2'
         coroutinesVersion = '1.6.0'
-        retrofitVersion = '2.6.0'
-        okHttpVersion = '4.9.1'
+        retrofitVersion = '2.9.0'
+        okHttpVersion = '5.0.0-alpha.6'
         ktlintVersion = '0.37.2'
         archCoreVersion = '2.0.1'
         pagingVersion = '1.0.1'

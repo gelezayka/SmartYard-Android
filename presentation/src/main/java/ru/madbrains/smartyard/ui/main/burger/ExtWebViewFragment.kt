@@ -5,10 +5,18 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.webkit.ConsoleMessage
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import androidx.fragment.app.Fragment
-import android.webkit.*
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import ru.madbrains.smartyard.EventObserver
@@ -49,7 +57,7 @@ class ExtWebViewFragment : Fragment() {
         if (title != null) {
             var newTitle = title
 
-            //удаляем кавычки или апострофы в начале и конце строки
+            // удаляем кавычки или апострофы в начале и конце строки
             if (newTitle.startsWith("\"") || newTitle.startsWith("'")) {
                 newTitle = newTitle.drop(1)
             }
@@ -76,7 +84,8 @@ class ExtWebViewFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentExtWebViewBinding.inflate(inflater, container, false)
@@ -104,11 +113,11 @@ class ExtWebViewFragment : Fragment() {
                 isUserGesture: Boolean,
                 resultMsg: Message?
             ): Boolean {
-                //пытаемся получить URL
+                // пытаемся получить URL
                 val href = view?.handler?.obtainMessage()
                 view?.requestFocusNodeHref(href)
-                val url = href?.data?.getString("url");
-                //Timber.d("debug_web onCreateWindow: isDialog = $isDialog   url = $url")
+                val url = href?.data?.getString("url")
+                // Timber.d("debug_web onCreateWindow: isDialog = $isDialog   url = $url")
                 if (url?.isNotEmpty() == true) {
                     val action = ExtWebViewFragmentDirections.actionExtWebViewFragmentToExtWebBottomFragment(url)
                     findNavController().navigate(action)
@@ -116,8 +125,8 @@ class ExtWebViewFragment : Fragment() {
                 return false
             }
 
-            //не всегда срабатывает, например, если перешли на предыдущую страницу то это событие не срабатывает;
-            //поэтому заголовок документа также получаем после окончания загрузки страницы (событие onPageFinished)
+            // не всегда срабатывает, например, если перешли на предыдущую страницу то это событие не срабатывает;
+            // поэтому заголовок документа также получаем после окончания загрузки страницы (событие onPageFinished)
             override fun onReceivedTitle(view: WebView?, title: String?) {
                 super.onReceivedTitle(view, title)
                 Timber.d("debug_web title = $title")
@@ -144,8 +153,11 @@ class ExtWebViewFragment : Fragment() {
                 request: WebResourceRequest?
             ): WebResourceResponse? {
                 return if (request?.url?.path?.endsWith("lanta.js") == true) {
-                    WebResourceResponse("text/javascript", "utf-8",
-                        ByteArrayInputStream(ExtWebInterface.JS_INJECTION.toByteArray()))
+                    WebResourceResponse(
+                        "text/javascript",
+                        "utf-8",
+                        ByteArrayInputStream(ExtWebInterface.JS_INJECTION.toByteArray())
+                    )
                 } else {
                     super.shouldInterceptRequest(view, request)
                 }
@@ -159,28 +171,32 @@ class ExtWebViewFragment : Fragment() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
 
-                //так как не всегда обновляется заголовок документа, то получем его принудительно через JS
+                // так как не всегда обновляется заголовок документа, то получем его принудительно через JS
                 binding.wvExt.evaluateJavascript("document.title") {
                     setTitle(it)
                 }
             }
         }
 
-        binding.wvExt.addJavascriptInterface(ExtWebInterface(viewModel,
-            object : ExtWebInterface.Callback {
-                override fun onPostLoadingStarted() {
-                    requireActivity().runOnUiThread {
-                        binding.pbWebView.visibility = View.VISIBLE
+        binding.wvExt.addJavascriptInterface(
+            ExtWebInterface(
+                viewModel,
+                object : ExtWebInterface.Callback {
+                    override fun onPostLoadingStarted() {
+                        requireActivity().runOnUiThread {
+                            binding.pbWebView.visibility = View.VISIBLE
+                        }
                     }
-                }
 
-                override fun onPostLoadingFinished() {
-                    requireActivity().runOnUiThread {
-                        binding.pbWebView.visibility = View.INVISIBLE
+                    override fun onPostLoadingFinished() {
+                        requireActivity().runOnUiThread {
+                            binding.pbWebView.visibility = View.INVISIBLE
+                        }
                     }
                 }
-            }),
-            ExtWebInterface.WEB_INTERFACE_OBJECT)
+            ),
+            ExtWebInterface.WEB_INTERFACE_OBJECT
+        )
 
         if (code != null) {
             binding.wvExt.loadDataWithBaseURL(basePath, code!!, "text/html", "utf-8", null)
@@ -199,20 +215,23 @@ class ExtWebViewFragment : Fragment() {
         viewModel.onPostRefreshParent.observe(
             viewLifecycleOwner,
             EventObserver {
-                val handler = Handler()
-                handler.postDelayed({
-                    //binding.wvExt.reload()
-                    binding.wvExt.url?.let { url ->
-                        val newUrl = url + if (!url.contains("forceRefresh", true)) {
-                            "&forceRefresh=1"
-                        } else {
-                            ""
+                val handler = Handler(Looper.getMainLooper())
+                handler.postDelayed(
+                    {
+                        // binding.wvExt.reload()
+                        binding.wvExt.url?.let { url ->
+                            val newUrl = url + if (!url.contains("forceRefresh", true)) {
+                                "&forceRefresh=1"
+                            } else {
+                                ""
+                            }
+                            Timber.d("debug_web reload parent url = $newUrl")
+                            binding.wvExt.clearCache(true)
+                            binding.wvExt.evaluateJavascript("document.location.replace('$newUrl');") {}
                         }
-                        Timber.d("debug_web reload parent url = $newUrl")
-                        binding.wvExt.clearCache(true)
-                        binding.wvExt.evaluateJavascript("document.location.replace('$newUrl');") {}
-                    }
-                }, it * 1000L)
+                    },
+                    it * 1000L
+                )
             }
         )
     }

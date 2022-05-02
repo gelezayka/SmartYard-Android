@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ru.madbrains.domain.model.response.FaceData
@@ -33,7 +32,7 @@ class FaceSettingsAdapter(
     inner class FaceSettingsAdapterVH constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivFacePhoto: ImageView = itemView.findViewById(R.id.ivFacePhoto)
         private val ivRemoveFace: ImageView = itemView.findViewById(R.id.ivRemoveFace)
-        
+
         fun onBind(position: Int) {
             Glide.with(ivFacePhoto)
                 .load(faces[position].faceImage)

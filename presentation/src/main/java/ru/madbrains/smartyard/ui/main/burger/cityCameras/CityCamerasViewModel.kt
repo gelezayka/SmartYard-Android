@@ -30,7 +30,7 @@ class CityCamerasViewModel(
     fun getCityCameras(onComplete: listenerEmpty) {
         viewModelScope.withProgress {
             cctvInteractor.getCCTVOverview()?.let {
-                cityCameraList = it.toList().filter {cityCamera ->
+                cityCameraList = it.toList().filter { cityCamera ->
                     cityCamera.latitude != null && cityCamera.longitude != null
                 }
                 onComplete()
@@ -60,8 +60,10 @@ class CityCamerasViewModel(
         val summary = "Авто: Запрос на получение видеофрагмента с архива"
         val description =
             "Обработать запрос на добавление видеофрагмента из архива видовой видеокамеры ${chosenCamera.value?.name} (id = ${chosenCamera.value?.id}) по парамертам: дата: ${recordDate.format(
-                DateTimeFormatter.ofPattern("d.MM.yyyy"))}, время: ${recordTime.format(
-                DateTimeFormatter.ofPattern("HH-mm"))}, продолжительность фрагмента: $duration минут. Комментарий пользователя: $comments."
+                DateTimeFormatter.ofPattern("d.MM.yyyy")
+            )}, время: ${recordTime.format(
+                DateTimeFormatter.ofPattern("HH-mm")
+            )}, продолжительность фрагмента: $duration минут. Комментарий пользователя: $comments."
         val x10011 = "-5"
         val x12440 = "Приложение"
         super.createIssue(
@@ -77,10 +79,10 @@ class CityCamerasViewModel(
         private const val chosenCityCamera_Key = "chosenCityCamera_Key"
         private const val eventList_Key = "eventList_Key"
 
-        //количество подгружаемых происшествий
+        // количество подгружаемых происшествий
         const val CHUNK_ITEM_COUNT = 8
 
-        //глубина записи архива в днях
+        // глубина записи архива в днях
         const val RECORD_DEPTH_DAYS = 7L
     }
 }

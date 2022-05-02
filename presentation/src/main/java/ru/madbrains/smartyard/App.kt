@@ -32,11 +32,11 @@ class App : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
-        //Timber.plant(Timber.DebugTree())
+        // Timber.plant(Timber.DebugTree())
     }
 
     private fun initYandex() {
-        val apiKey = "your-api-key"
+        val apiKey = "fb3f7621-1399-4262-8562-7c01165f8f83"
         val config = YandexMetricaConfig.newConfigBuilder(apiKey).build()
         YandexMetrica.activate(applicationContext, config)
         YandexMetrica.enableActivityAutoTracking(this)

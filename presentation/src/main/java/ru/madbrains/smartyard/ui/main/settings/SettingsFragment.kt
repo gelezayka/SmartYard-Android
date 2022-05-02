@@ -168,8 +168,9 @@ class SettingsFragment : Fragment() {
                     binding.floatingActionButton.show()
                 }
 
-                if (!binding.rvSettings.canScrollVertically(-1)
-                    && binding.floatingActionButton.visibility != View.VISIBLE) {
+                if (!binding.rvSettings.canScrollVertically(-1) &&
+                    binding.floatingActionButton.visibility != View.VISIBLE
+                ) {
                     binding.floatingActionButton.show()
                 }
             }

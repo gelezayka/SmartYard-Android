@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
-import ru.madbrains.smartyard.R
 import ru.madbrains.smartyard.databinding.DialogServiceBinding
 import ru.madbrains.smartyard.ui.main.settings.SettingsViewModel
 
