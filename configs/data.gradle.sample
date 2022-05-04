@@ -1,0 +1,11 @@
+android {
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+	buildConfigField "String", "API_URL", "\"https://api.example.com:443\""
+	buildConfigField "String", "sberApiUserName", "\"your-user-name\""
+	buildConfigField "String", "sberApiPassword", "\"your-password\""
+    }
+}

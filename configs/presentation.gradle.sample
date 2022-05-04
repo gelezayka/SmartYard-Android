@@ -1,0 +1,10 @@
+android {
+    defaultConfig {
+        applicationId "ru.madbrains.smartyard"
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode 36
+        versionName '1.6.26'
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+}
