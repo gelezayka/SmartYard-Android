@@ -6,5 +6,6 @@ android {
         versionCode 36
         versionName '1.6.26'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+	buildConfigField "String", "YANDEX_API_KEY", "\"your-api-key\""
     }
 }
