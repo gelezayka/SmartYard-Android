@@ -1,15 +1,9 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'com.google.gms.google-services'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-parcelize'
-
 apply plugin: 'com.google.firebase.crashlytics'
-
 apply plugin: 'kotlin-kapt'
-
 apply plugin: 'androidx.navigation.safeargs'
 
 
@@ -25,14 +19,8 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
-    defaultConfig {
-        applicationId "ru.madbrains.smartyard"
-        minSdkVersion rootProject.minSdkVersion
-        targetSdkVersion rootProject.targetSdkVersion
-        versionCode 36
-        versionName '1.6.26'
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
+    apply from: "$rootDir/configs/presentation.gradle"
+
     buildTypes {
         disableLint {
             debuggable true

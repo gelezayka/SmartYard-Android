@@ -15,13 +15,15 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
-    defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
-        targetSdkVersion rootProject.targetSdkVersion
+    apply from: "$rootDir/configs/data.gradle"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles 'consumer-rules.pro'
-    }
+//    defaultConfig {
+//        minSdkVersion rootProject.minSdkVersion
+//        targetSdkVersion rootProject.targetSdkVersion
+//
+//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+//        consumerProguardFiles 'consumer-rules.pro'
+//    }
 
     buildTypes {
         disableLint {

@@ -45,11 +45,11 @@ import java.util.concurrent.TimeUnit
 
 object DataModule {
 
-    var URL = "https://dm.lanta.me:543"
+    var URL = BuildConfig.API_URL
     private var BASE_URL = "$URL/"
 
-    val sberApiUserName = "your-user-name"
-    val sberApiPassword = "your-password"
+    val sberApiUserName = BuildConfig.sberApiUserName
+    val sberApiPassword = BuildConfig.sberApiPassword
     val orderNumberToId = hashMapOf<String, String>()
     fun extractOrderId(orderNumber: String): String {
         var r = ""

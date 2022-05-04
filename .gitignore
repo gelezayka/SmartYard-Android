@@ -16,6 +16,8 @@ out/
 # Gradle files
 .gradle/
 build/
+configs/data.gradle
+configs/presentation.gradle
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -62,3 +64,4 @@ fastlane/readme.md
 
 # build
 presentation/lanta/
+presentation/google-services.json
